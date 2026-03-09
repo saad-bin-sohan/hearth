@@ -34,8 +34,14 @@ class SettingsScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(user?.displayName ?? 'Guest', style: Theme.of(context).textTheme.titleLarge),
-                        Text(user?.email ?? '', style: Theme.of(context).textTheme.bodySmall),
+                        Text(
+                          user?.displayName ?? 'Guest',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Text(
+                          user?.email ?? '',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ],
                     ),
                   ),
@@ -56,19 +62,25 @@ class SettingsScreen extends ConsumerWidget {
                 label: 'Light',
                 selected: mode == ThemeMode.light,
                 icon: HugeIcons.strokeRoundedSun01,
-                onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light),
+                onTap: () => ref
+                    .read(themeModeProvider.notifier)
+                    .setThemeMode(ThemeMode.light),
               ),
               _ThemeChip(
                 label: 'Dark',
                 selected: mode == ThemeMode.dark,
                 icon: HugeIcons.strokeRoundedMoon01,
-                onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark),
+                onTap: () => ref
+                    .read(themeModeProvider.notifier)
+                    .setThemeMode(ThemeMode.dark),
               ),
               _ThemeChip(
                 label: 'System',
                 selected: mode == ThemeMode.system,
                 icon: HugeIcons.strokeRoundedComputerSettings,
-                onTap: () => ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.system),
+                onTap: () => ref
+                    .read(themeModeProvider.notifier)
+                    .setThemeMode(ThemeMode.system),
               ),
             ],
           ),
@@ -77,7 +89,10 @@ class SettingsScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text('About Hearth', style: Theme.of(context).textTheme.titleLarge),
+                Text(
+                  'About Hearth',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
                 const SizedBox(height: AppSpacing.sm),
                 Text(
                   'Phase 1 delivers the design system, local auth, household setup, navigation, and theme controls.',

@@ -16,5 +16,11 @@ class AppUser extends Equatable {
   final DateTime updatedAt;
 
   @override
-  List<Object?> get props => <Object?>[id, email, displayName, createdAt, updatedAt];
+  List<Object?> get props => <Object?>[
+    id,
+    email,
+    displayName,
+    createdAt,
+    updatedAt,
+  ];
 }

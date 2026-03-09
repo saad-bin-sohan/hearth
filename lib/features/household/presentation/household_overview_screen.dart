@@ -28,7 +28,8 @@ class HouseholdOverviewScreen extends ConsumerWidget {
           children: <Widget>[
             HearthSectionHeader(
               title: household.name,
-              subtitle: 'Invite code ${household.inviteCode} • ${household.currencyCode}',
+              subtitle:
+                  'Invite code ${household.inviteCode} • ${household.currencyCode}',
             ),
             HearthCard(
               child: Column(

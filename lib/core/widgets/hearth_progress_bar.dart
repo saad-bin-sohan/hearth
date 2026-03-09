@@ -4,10 +4,7 @@ import 'package:hearth/core/theme/app_colors.dart';
 import 'package:hearth/core/theme/app_dimensions.dart';
 
 class HearthProgressBar extends StatelessWidget {
-  const HearthProgressBar({
-    required this.progress,
-    super.key,
-  });
+  const HearthProgressBar({required this.progress, super.key});
 
   final double progress;
 

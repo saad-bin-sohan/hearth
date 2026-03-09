@@ -37,10 +37,7 @@ class _HearthFABEntryState extends State<HearthFABEntry>
   @override
   Widget build(BuildContext context) {
     return ScaleTransition(
-      scale: CurvedAnimation(
-        parent: _controller,
-        curve: Curves.elasticOut,
-      ),
+      scale: CurvedAnimation(parent: _controller, curve: Curves.elasticOut),
       child: FadeTransition(opacity: _controller, child: widget.child),
     );
   }

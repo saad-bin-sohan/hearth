@@ -88,7 +88,8 @@ class _HearthEmptyStateState extends State<HearthEmptyState>
                 color: AppColors.textSecondaryFor(brightness),
               ),
             ),
-            if (widget.ctaLabel != null && widget.onCtaPressed != null) ...<Widget>[
+            if (widget.ctaLabel != null &&
+                widget.onCtaPressed != null) ...<Widget>[
               const SizedBox(height: AppSpacing.lg),
               HearthButton(
                 label: widget.ctaLabel!,

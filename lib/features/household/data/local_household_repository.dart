@@ -16,11 +16,9 @@ final householdRepositoryProvider = Provider<HouseholdRepository>((Ref ref) {
 });
 
 class LocalHouseholdRepository implements HouseholdRepository {
-  LocalHouseholdRepository({
-    required AppDatabase database,
-    required Uuid uuid,
-  })  : _database = database,
-        _uuid = uuid;
+  LocalHouseholdRepository({required AppDatabase database, required Uuid uuid})
+    : _database = database,
+      _uuid = uuid;
 
   final AppDatabase _database;
   final Uuid _uuid;
@@ -87,7 +85,9 @@ class LocalHouseholdRepository implements HouseholdRepository {
     final inviteCode = await _generateInviteCode();
 
     await _database.transaction(() async {
-      await _database.into(_database.households).insert(
+      await _database
+          .into(_database.households)
+          .insert(
             HouseholdsCompanion.insert(
               id: householdId,
               name: name.trim(),
@@ -101,7 +101,9 @@ class LocalHouseholdRepository implements HouseholdRepository {
             ),
           );
 
-      await _database.into(_database.householdMemberships).insert(
+      await _database
+          .into(_database.householdMemberships)
+          .insert(
             HouseholdMembershipsCompanion.insert(
               id: _uuid.v4(),
               householdId: householdId,
@@ -135,10 +137,10 @@ class LocalHouseholdRepository implements HouseholdRepository {
 
   @override
   Future<HouseholdEntity?> getHouseholdForUser(String userId) async {
-    final membership = await (_database.select(
-      _database.householdMemberships,
-    )..where((HouseholdMemberships row) => row.userId.equals(userId)))
-        .getSingleOrNull();
+    final membership =
+        await (_database.select(_database.householdMemberships)
+              ..where((HouseholdMemberships row) => row.userId.equals(userId)))
+            .getSingleOrNull();
     if (membership == null) {
       return null;
     }
@@ -152,12 +154,11 @@ class LocalHouseholdRepository implements HouseholdRepository {
         _database.users,
         _database.users.id.equalsExp(_database.householdMemberships.userId),
       ),
-    ])
-      ..where(_database.householdMemberships.householdId.equals(householdId));
+    ])..where(_database.householdMemberships.householdId.equals(householdId));
 
     final rows = await query.get();
-    final members = rows
-        .map((TypedResult row) {
+    final members =
+        rows.map((TypedResult row) {
           final membership = row.readTable(_database.householdMemberships);
           final user = row.readTable(_database.users);
           return HouseholdMember(
@@ -170,12 +171,10 @@ class LocalHouseholdRepository implements HouseholdRepository {
             ),
             joinedAt: membership.joinedAt,
           );
-        })
-        .toList()
-      ..sort(
-        (HouseholdMember left, HouseholdMember right) =>
-            left.joinedAt.compareTo(right.joinedAt),
-      );
+        }).toList()..sort(
+          (HouseholdMember left, HouseholdMember right) =>
+              left.joinedAt.compareTo(right.joinedAt),
+        );
     return members;
   }
 
@@ -185,22 +184,25 @@ class LocalHouseholdRepository implements HouseholdRepository {
     required String inviteCode,
   }) async {
     final normalized = inviteCode.trim().toUpperCase();
-    final household = await (_database.select(
-      _database.households,
-    )..where((Households row) => row.inviteCode.equals(normalized))).getSingleOrNull();
+    final household =
+        await (_database.select(_database.households)
+              ..where((Households row) => row.inviteCode.equals(normalized)))
+            .getSingleOrNull();
     if (household == null) {
       throw StateError('That invite code could not be found.');
     }
 
-    final existing = await (_database.select(
-      _database.householdMemberships,
-    )..where(
-        (HouseholdMemberships row) =>
-            row.householdId.equals(household.id) & row.userId.equals(userId),
-      ))
-        .getSingleOrNull();
+    final existing =
+        await (_database.select(_database.householdMemberships)..where(
+              (HouseholdMemberships row) =>
+                  row.householdId.equals(household.id) &
+                  row.userId.equals(userId),
+            ))
+            .getSingleOrNull();
     if (existing == null) {
-      await _database.into(_database.householdMemberships).insert(
+      await _database
+          .into(_database.householdMemberships)
+          .insert(
             HouseholdMembershipsCompanion.insert(
               id: _uuid.v4(),
               householdId: household.id,
@@ -217,22 +219,27 @@ class LocalHouseholdRepository implements HouseholdRepository {
   @override
   Future<HouseholdInvitePreview> previewInvite(String inviteCode) async {
     final normalized = inviteCode.trim().toUpperCase();
-    final household = await (_database.select(
-      _database.households,
-    )..where((Households row) => row.inviteCode.equals(normalized))).getSingleOrNull();
+    final household =
+        await (_database.select(_database.households)
+              ..where((Households row) => row.inviteCode.equals(normalized)))
+            .getSingleOrNull();
     if (household == null) {
       throw StateError('That invite code could not be found.');
     }
 
-    final memberCount = await (_database.selectOnly(
-      _database.householdMemberships,
-    )..addColumns(<Expression<Object>>[
-        _database.householdMemberships.id.count(),
-      ])..where(
-        _database.householdMemberships.householdId.equals(household.id),
-      ))
-        .map((TypedResult row) => row.read(_database.householdMemberships.id.count()) ?? 0)
-        .getSingle();
+    final memberCount =
+        await (_database.selectOnly(_database.householdMemberships)
+              ..addColumns(<Expression<Object>>[
+                _database.householdMemberships.id.count(),
+              ])
+              ..where(
+                _database.householdMemberships.householdId.equals(household.id),
+              ))
+            .map(
+              (TypedResult row) =>
+                  row.read(_database.householdMemberships.id.count()) ?? 0,
+            )
+            .getSingle();
 
     return HouseholdInvitePreview(
       household: _mapHousehold(household),
@@ -246,7 +253,10 @@ class LocalHouseholdRepository implements HouseholdRepository {
     required String householdId,
     required String memberUserId,
   }) async {
-    await _assertCanManage(actingUserId: actingUserId, householdId: householdId);
+    await _assertCanManage(
+      actingUserId: actingUserId,
+      householdId: householdId,
+    );
     final targetMembership = await _membershipFor(householdId, memberUserId);
     if (targetMembership == null) {
       throw StateError('Member not found.');
@@ -258,9 +268,10 @@ class LocalHouseholdRepository implements HouseholdRepository {
       }
     }
 
-    await (_database.delete(
-      _database.householdMemberships,
-    )..where((HouseholdMemberships row) => row.id.equals(targetMembership.id))).go();
+    await (_database.delete(_database.householdMemberships)..where(
+          (HouseholdMemberships row) => row.id.equals(targetMembership.id),
+        ))
+        .go();
   }
 
   @override
@@ -270,7 +281,10 @@ class LocalHouseholdRepository implements HouseholdRepository {
     required String memberUserId,
     required HouseholdRole role,
   }) async {
-    await _assertCanManage(actingUserId: actingUserId, householdId: householdId);
+    await _assertCanManage(
+      actingUserId: actingUserId,
+      householdId: householdId,
+    );
     final targetMembership = await _membershipFor(householdId, memberUserId);
     if (targetMembership == null) {
       throw StateError('Member not found.');
@@ -284,11 +298,10 @@ class LocalHouseholdRepository implements HouseholdRepository {
       }
     }
 
-    await (_database.update(
-      _database.householdMemberships,
-    )..where((HouseholdMemberships row) => row.id.equals(targetMembership.id))).write(
-      HouseholdMembershipsCompanion(role: Value<String>(role.name)),
-    );
+    await (_database.update(_database.householdMemberships)..where(
+          (HouseholdMemberships row) => row.id.equals(targetMembership.id),
+        ))
+        .write(HouseholdMembershipsCompanion(role: Value<String>(role.name)));
   }
 
   Future<void> _assertCanManage({
@@ -296,20 +309,24 @@ class LocalHouseholdRepository implements HouseholdRepository {
     required String householdId,
   }) async {
     final actingMembership = await _membershipFor(householdId, actingUserId);
-    if (actingMembership == null || actingMembership.role != HouseholdRole.admin.name) {
+    if (actingMembership == null ||
+        actingMembership.role != HouseholdRole.admin.name) {
       throw StateError('Only admins can manage members.');
     }
   }
 
   Future<int> _adminCount(String householdId) async {
     final countExp = _database.householdMemberships.id.count();
-    final row = await (_database.selectOnly(_database.householdMemberships)
-          ..addColumns(<Expression<Object>>[countExp])
-          ..where(
-            _database.householdMemberships.householdId.equals(householdId) &
-                _database.householdMemberships.role.equals(HouseholdRole.admin.name),
-          ))
-        .getSingle();
+    final row =
+        await (_database.selectOnly(_database.householdMemberships)
+              ..addColumns(<Expression<Object>>[countExp])
+              ..where(
+                _database.householdMemberships.householdId.equals(householdId) &
+                    _database.householdMemberships.role.equals(
+                      HouseholdRole.admin.name,
+                    ),
+              ))
+            .getSingle();
     return row.read(countExp) ?? 0;
   }
 
@@ -317,12 +334,10 @@ class LocalHouseholdRepository implements HouseholdRepository {
     String householdId,
     String userId,
   ) {
-    return (_database.select(
-      _database.householdMemberships,
-    )..where(
-        (HouseholdMemberships row) =>
-            row.householdId.equals(householdId) & row.userId.equals(userId),
-      ))
+    return (_database.select(_database.householdMemberships)..where(
+          (HouseholdMemberships row) =>
+              row.householdId.equals(householdId) & row.userId.equals(userId),
+        ))
         .getSingleOrNull();
   }
 
@@ -332,9 +347,10 @@ class LocalHouseholdRepository implements HouseholdRepository {
         8,
         (int index) => _alphabet[_random.nextInt(_alphabet.length)],
       ).join();
-      final existing = await (_database.select(
-        _database.households,
-      )..where((Households row) => row.inviteCode.equals(code))).getSingleOrNull();
+      final existing =
+          await (_database.select(_database.households)
+                ..where((Households row) => row.inviteCode.equals(code)))
+              .getSingleOrNull();
       if (existing == null) {
         return code;
       }

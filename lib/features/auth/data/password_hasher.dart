@@ -47,12 +47,16 @@ class PasswordHasher {
     required int keyLength,
   }) {
     final hmacSha256 = Hmac(sha256, password);
-    final blocks = (keyLength / hmacSha256.convert(<int>[]).bytes.length).ceil();
+    final blocks = (keyLength / hmacSha256.convert(<int>[]).bytes.length)
+        .ceil();
     final output = BytesBuilder();
 
     for (var block = 1; block <= blocks; block++) {
       final blockIndex = ByteData(4)..setUint32(0, block);
-      var u = hmacSha256.convert(<int>[...salt, ...blockIndex.buffer.asUint8List()]).bytes;
+      var u = hmacSha256.convert(<int>[
+        ...salt,
+        ...blockIndex.buffer.asUint8List(),
+      ]).bytes;
       final f = Uint8List.fromList(u);
 
       for (var iteration = 1; iteration < iterations; iteration++) {

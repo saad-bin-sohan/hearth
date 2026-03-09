@@ -4,11 +4,7 @@ import 'package:hearth/core/theme/app_colors.dart';
 import 'package:hearth/core/theme/app_dimensions.dart';
 
 class HearthBadge extends StatefulWidget {
-  const HearthBadge({
-    required this.count,
-    this.backgroundColor,
-    super.key,
-  });
+  const HearthBadge({required this.count, this.backgroundColor, super.key});
 
   final int count;
   final Color? backgroundColor;
@@ -52,9 +48,9 @@ class _HearthBadgeState extends State<HearthBadge>
         ),
         child: Text(
           '${widget.count}',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AppColors.textPrimary,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.labelSmall?.copyWith(color: AppColors.textPrimary),
         ),
       ),
     );

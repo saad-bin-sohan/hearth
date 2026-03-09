@@ -36,7 +36,10 @@ class _JoinHouseholdScreenState extends State<JoinHouseholdScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Enter an invite code', style: Theme.of(context).textTheme.headlineLarge),
+              Text(
+                'Enter an invite code',
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
               const SizedBox(height: AppSpacing.sm),
               Text(
                 'Ask an admin for the 8-character code and we’ll show a confirmation preview before you join.',
@@ -55,8 +58,12 @@ class _JoinHouseholdScreenState extends State<JoinHouseholdScreen> {
                   if (!(_formKey.currentState?.validate() ?? false)) {
                     return;
                   }
-                  final code = Uri.encodeComponent(_codeController.text.trim().toUpperCase());
-                  context.push('${JoinHouseholdConfirmScreen.routePath}?code=$code');
+                  final code = Uri.encodeComponent(
+                    _codeController.text.trim().toUpperCase(),
+                  );
+                  context.push(
+                    '${JoinHouseholdConfirmScreen.routePath}?code=$code',
+                  );
                 },
               ),
             ],

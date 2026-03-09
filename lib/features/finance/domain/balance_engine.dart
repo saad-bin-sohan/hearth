@@ -44,13 +44,15 @@ class BalanceResult extends Equatable {
   final int amountCents;
 
   @override
-  List<Object?> get props => <Object?>[debtorUserId, creditorUserId, amountCents];
+  List<Object?> get props => <Object?>[
+    debtorUserId,
+    creditorUserId,
+    amountCents,
+  ];
 }
 
 class BalanceEngine {
-  const BalanceEngine({
-    this.splitEngine = const SplitEngine(),
-  });
+  const BalanceEngine({this.splitEngine = const SplitEngine()});
 
   final SplitEngine splitEngine;
 
@@ -68,13 +70,16 @@ class BalanceEngine {
       obligations[key] = (obligations[key] ?? 0) + amount;
     }
 
-    for (final expense in expenses.where((BalanceComputationInput entry) => !entry.isRecurringTemplate)) {
+    for (final expense in expenses.where(
+      (BalanceComputationInput entry) => !entry.isRecurringTemplate,
+    )) {
       final allocations = splitEngine.allocate(
         totalCents: expense.amountCents,
         rule: expense.splitRule,
       );
       for (final allocation in allocations) {
-        if (allocation.userId == expense.paidByUserId || allocation.amountCents == 0) {
+        if (allocation.userId == expense.paidByUserId ||
+            allocation.amountCents == 0) {
           continue;
         }
         add(allocation.userId, expense.paidByUserId, allocation.amountCents);
@@ -82,9 +87,14 @@ class BalanceEngine {
     }
 
     for (final settlement in settlements.where(
-      (SettlementComputationInput entry) => entry.status == SettlementStatus.completed,
+      (SettlementComputationInput entry) =>
+          entry.status == SettlementStatus.completed,
     )) {
-      add(settlement.debtorUserId, settlement.creditorUserId, -settlement.amountCents);
+      add(
+        settlement.debtorUserId,
+        settlement.creditorUserId,
+        -settlement.amountCents,
+      );
     }
 
     final results = <BalanceResult>[];

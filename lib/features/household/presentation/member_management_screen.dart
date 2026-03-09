@@ -43,7 +43,9 @@ class MemberManagementScreen extends ConsumerWidget {
                         ? HearthSwipeAction(
                             icon: HugeIcons.strokeRoundedDelete02,
                             label: 'Remove',
-                            color: AppColors.errorFor(Theme.of(context).brightness),
+                            color: AppColors.errorFor(
+                              Theme.of(context).brightness,
+                            ),
                             onTriggered: () async {
                               await ref
                                   .read(householdNotifierProvider.notifier)
@@ -54,7 +56,10 @@ class MemberManagementScreen extends ConsumerWidget {
                     child: HearthCard(
                       child: Row(
                         children: <Widget>[
-                          HearthAvatar(displayName: member.displayName, size: 48),
+                          HearthAvatar(
+                            displayName: member.displayName,
+                            size: 48,
+                          ),
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Column(
@@ -64,14 +69,19 @@ class MemberManagementScreen extends ConsumerWidget {
                                   member.displayName,
                                   style: Theme.of(context).textTheme.titleLarge,
                                 ),
-                                Text(member.email, style: Theme.of(context).textTheme.bodySmall),
+                                Text(
+                                  member.email,
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
                               ],
                             ),
                           ),
                           RoleBadge(role: member.role),
                           if (canManage)
                             PopupMenuButton<HouseholdRole>(
-                              icon: const Icon(HugeIcons.strokeRoundedMoreVertical),
+                              icon: const Icon(
+                                HugeIcons.strokeRoundedMoreVertical,
+                              ),
                               onSelected: (role) async {
                                 await ref
                                     .read(householdNotifierProvider.notifier)
@@ -98,7 +108,8 @@ class MemberManagementScreen extends ConsumerWidget {
                 );
                 return tile;
               },
-              separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.md),
+              separatorBuilder: (context, index) =>
+                  const SizedBox(height: AppSpacing.md),
               itemCount: members.length,
             );
           },

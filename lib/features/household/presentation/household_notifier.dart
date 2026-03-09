@@ -47,7 +47,9 @@ class HouseholdNotifier extends StateNotifier<HouseholdActionState> {
 
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      final household = await ref.read(householdRepositoryProvider).createHousehold(
+      final household = await ref
+          .read(householdRepositoryProvider)
+          .createHousehold(
             userId: session.userId!,
             name: name,
             emoji: emoji,
@@ -68,9 +70,15 @@ class HouseholdNotifier extends StateNotifier<HouseholdActionState> {
   }
 
   Future<HouseholdInvitePreview> previewInvite(String inviteCode) async {
-    state = state.copyWith(isLoading: true, clearMessage: true, clearPreview: true);
+    state = state.copyWith(
+      isLoading: true,
+      clearMessage: true,
+      clearPreview: true,
+    );
     try {
-      final preview = await ref.read(householdRepositoryProvider).previewInvite(inviteCode);
+      final preview = await ref
+          .read(householdRepositoryProvider)
+          .previewInvite(inviteCode);
       state = state.copyWith(isLoading: false, preview: preview);
       return preview;
     } on StateError catch (error) {
@@ -87,10 +95,9 @@ class HouseholdNotifier extends StateNotifier<HouseholdActionState> {
 
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      final household = await ref.read(householdRepositoryProvider).joinHousehold(
-            userId: session.userId!,
-            inviteCode: inviteCode,
-          );
+      final household = await ref
+          .read(householdRepositoryProvider)
+          .joinHousehold(userId: session.userId!, inviteCode: inviteCode);
       await ref
           .read(sessionControllerProvider.notifier)
           .setActiveHousehold(household.id);
@@ -115,7 +122,9 @@ class HouseholdNotifier extends StateNotifier<HouseholdActionState> {
     }
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      await ref.read(householdRepositoryProvider).updateRole(
+      await ref
+          .read(householdRepositoryProvider)
+          .updateRole(
             actingUserId: session.userId!,
             householdId: household.id,
             memberUserId: memberUserId,
@@ -137,7 +146,9 @@ class HouseholdNotifier extends StateNotifier<HouseholdActionState> {
     }
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      await ref.read(householdRepositoryProvider).removeMember(
+      await ref
+          .read(householdRepositoryProvider)
+          .removeMember(
             actingUserId: session.userId!,
             householdId: household.id,
             memberUserId: memberUserId,
@@ -160,7 +171,9 @@ final householdNotifierProvider =
       return HouseholdNotifier(ref);
     });
 
-final currentHouseholdProvider = FutureProvider<HouseholdEntity?>((Ref ref) async {
+final currentHouseholdProvider = FutureProvider<HouseholdEntity?>((
+  Ref ref,
+) async {
   final session = ref.watch(sessionControllerProvider);
   if (session.userId == null) {
     return null;
@@ -168,7 +181,9 @@ final currentHouseholdProvider = FutureProvider<HouseholdEntity?>((Ref ref) asyn
 
   final repository = ref.watch(householdRepositoryProvider);
   if (session.activeHouseholdId != null) {
-    final household = await repository.getHouseholdById(session.activeHouseholdId!);
+    final household = await repository.getHouseholdById(
+      session.activeHouseholdId!,
+    );
     if (household != null) {
       return household;
     }
@@ -176,12 +191,16 @@ final currentHouseholdProvider = FutureProvider<HouseholdEntity?>((Ref ref) asyn
 
   final inferred = await repository.getHouseholdForUser(session.userId!);
   if (inferred != null) {
-    await ref.read(sessionControllerProvider.notifier).setActiveHousehold(inferred.id);
+    await ref
+        .read(sessionControllerProvider.notifier)
+        .setActiveHousehold(inferred.id);
   }
   return inferred;
 });
 
-final householdMembersProvider = FutureProvider<List<HouseholdMember>>((Ref ref) async {
+final householdMembersProvider = FutureProvider<List<HouseholdMember>>((
+  Ref ref,
+) async {
   final household = await ref.watch(currentHouseholdProvider.future);
   if (household == null) {
     return const <HouseholdMember>[];
@@ -189,7 +208,9 @@ final householdMembersProvider = FutureProvider<List<HouseholdMember>>((Ref ref)
   return ref.watch(householdRepositoryProvider).getMembers(household.id);
 });
 
-final currentHouseholdRoleProvider = FutureProvider<HouseholdRole?>((Ref ref) async {
+final currentHouseholdRoleProvider = FutureProvider<HouseholdRole?>((
+  Ref ref,
+) async {
   final session = ref.watch(sessionControllerProvider);
   final members = await ref.watch(householdMembersProvider.future);
   if (session.userId == null) {
@@ -203,9 +224,10 @@ final currentHouseholdRoleProvider = FutureProvider<HouseholdRole?>((Ref ref) as
   return null;
 });
 
-final invitePreviewProvider = FutureProvider.family<HouseholdInvitePreview, String>((
-  Ref ref,
-  String inviteCode,
-) {
-  return ref.watch(householdRepositoryProvider).previewInvite(inviteCode);
-});
+final invitePreviewProvider =
+    FutureProvider.family<HouseholdInvitePreview, String>((
+      Ref ref,
+      String inviteCode,
+    ) {
+      return ref.watch(householdRepositoryProvider).previewInvite(inviteCode);
+    });

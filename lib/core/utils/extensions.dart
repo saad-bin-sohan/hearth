@@ -34,21 +34,18 @@ extension StringX on String {
 }
 
 extension BrightnessX on Brightness {
-  Color get textPrimary =>
-      this == Brightness.dark
-          ? AppColors.textPrimaryDark
-          : AppColors.textPrimary;
+  Color get textPrimary => this == Brightness.dark
+      ? AppColors.textPrimaryDark
+      : AppColors.textPrimary;
 
-  Color get textSecondary =>
-      this == Brightness.dark
-          ? AppColors.textSecondaryDark
-          : AppColors.textSecondary;
+  Color get textSecondary => this == Brightness.dark
+      ? AppColors.textSecondaryDark
+      : AppColors.textSecondary;
 }
 
 extension EdgeInsetsX on num {
   EdgeInsets get all => EdgeInsets.all(toDouble());
-  EdgeInsets get horizontal =>
-      EdgeInsets.symmetric(horizontal: toDouble());
+  EdgeInsets get horizontal => EdgeInsets.symmetric(horizontal: toDouble());
   EdgeInsets get vertical => EdgeInsets.symmetric(vertical: toDouble());
 }
 

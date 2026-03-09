@@ -195,48 +195,51 @@ void main() {
     expect(groceries.limitCents, 25000);
   });
 
-  test('settlement confirmation clears balances after both parties confirm', () async {
-    final setup = await _seedHousehold(
-      authRepository: authRepository,
-      householdRepository: householdRepository,
-    );
+  test(
+    'settlement confirmation clears balances after both parties confirm',
+    () async {
+      final setup = await _seedHousehold(
+        authRepository: authRepository,
+        householdRepository: householdRepository,
+      );
 
-    await financeRepository.addExpense(
-      actorUserId: setup.alice.id,
-      draft: ExpenseDraft(
-        householdId: setup.household.id,
-        title: 'Rent split',
-        amountCents: 1200,
-        category: FinanceCategory.housing,
-        paidByUserId: setup.alice.id,
-        expenseDate: DateTime(2026, 3, 9),
-        splitRule: EqualSplitRule(
-          participantUserIds: <String>[setup.alice.id, setup.bob.id],
+      await financeRepository.addExpense(
+        actorUserId: setup.alice.id,
+        draft: ExpenseDraft(
+          householdId: setup.household.id,
+          title: 'Rent split',
+          amountCents: 1200,
+          category: FinanceCategory.housing,
+          paidByUserId: setup.alice.id,
+          expenseDate: DateTime(2026, 3, 9),
+          splitRule: EqualSplitRule(
+            participantUserIds: <String>[setup.alice.id, setup.bob.id],
+          ),
         ),
-      ),
-    );
+      );
 
-    final requested = await financeRepository.requestSettlement(
-      actorUserId: setup.bob.id,
-      householdId: setup.household.id,
-      debtorUserId: setup.bob.id,
-      creditorUserId: setup.alice.id,
-      amountCents: 600,
-    );
+      final requested = await financeRepository.requestSettlement(
+        actorUserId: setup.bob.id,
+        householdId: setup.household.id,
+        debtorUserId: setup.bob.id,
+        creditorUserId: setup.alice.id,
+        amountCents: 600,
+      );
 
-    expect(requested.isPending, isTrue);
+      expect(requested.isPending, isTrue);
 
-    final confirmed = await financeRepository.confirmSettlement(
-      actorUserId: setup.alice.id,
-      settlementId: requested.id,
-    );
+      final confirmed = await financeRepository.confirmSettlement(
+        actorUserId: setup.alice.id,
+        settlementId: requested.id,
+      );
 
-    expect(confirmed.isCompleted, isTrue);
-    expect(
-      await financeRepository.getBalances(householdId: setup.household.id),
-      isEmpty,
-    );
-  });
+      expect(confirmed.isCompleted, isTrue);
+      expect(
+        await financeRepository.getBalances(householdId: setup.household.id),
+        isEmpty,
+      );
+    },
+  );
 
   test('recurring reconciliation generates due instances once', () async {
     final setup = await _seedHousehold(
@@ -286,7 +289,8 @@ void main() {
   });
 }
 
-Future<({AppUser alice, AppUser bob, HouseholdEntity household})> _seedHousehold({
+Future<({AppUser alice, AppUser bob, HouseholdEntity household})>
+_seedHousehold({
   required LocalAuthRepository authRepository,
   required LocalHouseholdRepository householdRepository,
 }) async {
@@ -309,9 +313,5 @@ Future<({AppUser alice, AppUser bob, HouseholdEntity household})> _seedHousehold
     userId: bob.id,
     inviteCode: household.inviteCode,
   );
-  return (
-    alice: alice,
-    bob: bob,
-    household: household,
-  );
+  return (alice: alice, bob: bob, household: household);
 }

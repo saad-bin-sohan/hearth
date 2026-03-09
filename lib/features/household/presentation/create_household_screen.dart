@@ -96,10 +96,12 @@ class _CreateHouseholdScreenState extends ConsumerState<CreateHouseholdScreen> {
                           builder: (context, emoji, _) {
                             return GestureDetector(
                               onTap: () async {
-                                final result = await showHearthBottomSheet<String>(
-                                  context: context,
-                                  builder: (context) => const EmojiPickerSheet(),
-                                );
+                                final result =
+                                    await showHearthBottomSheet<String>(
+                                      context: context,
+                                      builder: (context) =>
+                                          const EmojiPickerSheet(),
+                                    );
                                 if (result != null) {
                                   _emoji.value = result;
                                 }
@@ -107,7 +109,10 @@ class _CreateHouseholdScreenState extends ConsumerState<CreateHouseholdScreen> {
                               child: CircleAvatar(
                                 radius: 40,
                                 backgroundColor: _swatches[_colorKey.value],
-                                child: Text(emoji, style: const TextStyle(fontSize: 32)),
+                                child: Text(
+                                  emoji,
+                                  style: const TextStyle(fontSize: 32),
+                                ),
                               ),
                             );
                           },
@@ -135,7 +140,10 @@ class _CreateHouseholdScreenState extends ConsumerState<CreateHouseholdScreen> {
                     validator: Validators.householdName,
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  Text('Avatar Color', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Avatar Color',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   const SizedBox(height: AppSpacing.sm),
                   ValueListenableBuilder<String>(
                     valueListenable: _colorKey,
@@ -167,7 +175,10 @@ class _CreateHouseholdScreenState extends ConsumerState<CreateHouseholdScreen> {
                     },
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  Text('Currency', style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    'Currency',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   const SizedBox(height: AppSpacing.sm),
                   ValueListenableBuilder<String>(
                     valueListenable: _currency,
@@ -204,14 +215,18 @@ class _CreateHouseholdScreenState extends ConsumerState<CreateHouseholdScreen> {
                       if (!(_formKey.currentState?.validate() ?? false)) {
                         return;
                       }
-                      await ref.read(householdNotifierProvider.notifier).createHousehold(
+                      await ref
+                          .read(householdNotifierProvider.notifier)
+                          .createHousehold(
                             name: _nameController.text,
                             emoji: _emoji.value,
                             avatarColorKey: _colorKey.value,
                             currencyCode: _currency.value,
                           );
                       _showCelebration.value = true;
-                      await Future<void>.delayed(const Duration(milliseconds: 700));
+                      await Future<void>.delayed(
+                        const Duration(milliseconds: 700),
+                      );
                       if (context.mounted) {
                         context.go(InviteScreen.routePath);
                       }

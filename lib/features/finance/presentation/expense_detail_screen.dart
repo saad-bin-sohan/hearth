@@ -14,17 +14,15 @@ import 'package:hearth/features/finance/presentation/widgets/balance_settlement_
 import 'package:hugeicons/hugeicons.dart';
 
 class ExpenseDetailScreen extends ConsumerStatefulWidget {
-  const ExpenseDetailScreen({
-    required this.expenseId,
-    super.key,
-  });
+  const ExpenseDetailScreen({required this.expenseId, super.key});
 
   final String expenseId;
 
   static const String routePath = '/finance/expense';
 
   @override
-  ConsumerState<ExpenseDetailScreen> createState() => _ExpenseDetailScreenState();
+  ConsumerState<ExpenseDetailScreen> createState() =>
+      _ExpenseDetailScreenState();
 }
 
 class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
@@ -39,9 +37,9 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
         if (!mounted || next.message == null) {
           return;
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.message!)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.message!)));
         ref.read(financeNotifierProvider.notifier).clearMessage();
       },
     );
@@ -69,10 +67,8 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                 return const SizedBox.shrink();
               }
               return IconButton(
-                onPressed: () => showAddExpenseSheet(
-                  context,
-                  initialExpense: expense,
-                ),
+                onPressed: () =>
+                    showAddExpenseSheet(context, initialExpense: expense),
                 icon: const Icon(HugeIcons.strokeRoundedEdit02),
               );
             },
@@ -91,7 +87,9 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Delete expense?'),
-                        content: const Text('This recalculates balances immediately.'),
+                        content: const Text(
+                          'This recalculates balances immediately.',
+                        ),
                         actions: <Widget>[
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(false),
@@ -108,7 +106,9 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                   if (confirmed != true) {
                     return;
                   }
-                  await ref.read(financeNotifierProvider.notifier).deleteExpense(expense.id);
+                  await ref
+                      .read(financeNotifierProvider.notifier)
+                      .deleteExpense(expense.id);
                   if (context.mounted) {
                     context.pop();
                   }
@@ -138,11 +138,16 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                     rule: expense.splitRule,
                   );
                   final participants = <String, FinanceParticipant>{
-                    for (final participant in value.participants) participant.userId: participant,
+                    for (final participant in value.participants)
+                      participant.userId: participant,
                   };
                   final relatedBalances = balances.where((balance) {
-                    return expense.splitRule.participantUserIds.contains(balance.debtorUserId) &&
-                        expense.splitRule.participantUserIds.contains(balance.creditorUserId);
+                    return expense.splitRule.participantUserIds.contains(
+                          balance.debtorUserId,
+                        ) &&
+                        expense.splitRule.participantUserIds.contains(
+                          balance.creditorUserId,
+                        );
                   }).toList();
                   return ListView(
                     padding: const EdgeInsets.all(AppSpacing.md),
@@ -161,9 +166,12 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                                 amountCents: expense.amountCents,
                                 currencyCode: value.currencyCode,
                               ),
-                              style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                                color: AppColors.primaryFor(Theme.of(context).brightness),
-                              ),
+                              style: Theme.of(context).textTheme.displayLarge
+                                  ?.copyWith(
+                                    color: AppColors.primaryFor(
+                                      Theme.of(context).brightness,
+                                    ),
+                                  ),
                             ),
                             const SizedBox(height: AppSpacing.sm),
                             Text(
@@ -183,14 +191,19 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('Split breakdown', style: Theme.of(context).textTheme.titleLarge),
+                            Text(
+                              'Split breakdown',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
                             const SizedBox(height: AppSpacing.md),
                             for (final allocation in allocations) ...<Widget>[
                               Row(
                                 children: <Widget>[
                                   Expanded(
                                     child: Text(
-                                      participants[allocation.userId]?.displayName ?? 'Unknown',
+                                      participants[allocation.userId]
+                                              ?.displayName ??
+                                          'Unknown',
                                     ),
                                   ),
                                   Text(
@@ -211,7 +224,10 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('Receipt', style: Theme.of(context).textTheme.titleLarge),
+                            Text(
+                              'Receipt',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
                             const SizedBox(height: AppSpacing.sm),
                             Text(
                               expense.receiptReference == null
@@ -222,15 +238,22 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                           ],
                         ),
                       ),
-                      if (expense.notes != null && expense.notes!.isNotEmpty) ...<Widget>[
+                      if (expense.notes != null &&
+                          expense.notes!.isNotEmpty) ...<Widget>[
                         const SizedBox(height: AppSpacing.lg),
                         HearthCard(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Text('Notes', style: Theme.of(context).textTheme.titleLarge),
+                              Text(
+                                'Notes',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
                               const SizedBox(height: AppSpacing.sm),
-                              Text(expense.notes!, style: Theme.of(context).textTheme.bodyMedium),
+                              Text(
+                                expense.notes!,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
                             ],
                           ),
                         ),
@@ -240,7 +263,10 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('Settlement', style: Theme.of(context).textTheme.titleLarge),
+                            Text(
+                              'Settlement',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
                             const SizedBox(height: AppSpacing.sm),
                             if (relatedBalances.isEmpty)
                               Text(
@@ -253,7 +279,9 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                               Column(
                                 children: relatedBalances.map((balance) {
                                   return Padding(
-                                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                                    padding: const EdgeInsets.only(
+                                      bottom: AppSpacing.md,
+                                    ),
                                     child: Row(
                                       children: <Widget>[
                                         Expanded(
@@ -264,11 +292,12 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                                         HearthButton(
                                           label: 'Settle',
                                           expanded: false,
-                                          onPressed: () => showBalanceSettlementSheet(
-                                            context,
-                                            balance: balance,
-                                            sourceExpenseId: expense.id,
-                                          ),
+                                          onPressed: () =>
+                                              showBalanceSettlementSheet(
+                                                context,
+                                                balance: balance,
+                                                sourceExpenseId: expense.id,
+                                              ),
                                         ),
                                       ],
                                     ),

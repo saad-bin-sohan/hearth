@@ -7,11 +7,7 @@ import 'package:uuid/uuid.dart';
 enum AuthStatus { unauthenticated, loading, authenticated, error }
 
 class AuthState {
-  const AuthState({
-    required this.status,
-    this.user,
-    this.message,
-  });
+  const AuthState({required this.status, this.user, this.message});
 
   final AuthStatus status;
   final AppUser? user;
@@ -33,7 +29,7 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   AuthNotifier(this.ref)
-      : super(const AuthState(status: AuthStatus.unauthenticated));
+    : super(const AuthState(status: AuthStatus.unauthenticated));
 
   final Ref ref;
   final Uuid _uuid = const Uuid();
@@ -45,26 +41,23 @@ class AuthNotifier extends StateNotifier<AuthState> {
       return;
     }
 
-    final user = await ref.read(authRepositoryProvider).getUserById(session.userId!);
+    final user = await ref
+        .read(authRepositoryProvider)
+        .getUserById(session.userId!);
     state = user == null
         ? const AuthState(status: AuthStatus.unauthenticated)
         : AuthState(status: AuthStatus.authenticated, user: user);
   }
 
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signIn({required String email, required String password}) async {
     state = const AuthState(status: AuthStatus.loading);
     try {
-      final user = await ref.read(authRepositoryProvider).signIn(
-            email: email,
-            password: password,
-          );
-      await ref.read(sessionControllerProvider.notifier).saveSession(
-            authToken: _uuid.v4(),
-            userId: user.id,
-          );
+      final user = await ref
+          .read(authRepositoryProvider)
+          .signIn(email: email, password: password);
+      await ref
+          .read(sessionControllerProvider.notifier)
+          .saveSession(authToken: _uuid.v4(), userId: user.id);
       state = AuthState(status: AuthStatus.authenticated, user: user);
     } on StateError catch (error) {
       state = AuthState(status: AuthStatus.error, message: error.message);
@@ -76,20 +69,15 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState(status: AuthStatus.unauthenticated);
   }
 
-  Future<void> signUp({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> signUp({required String email, required String password}) async {
     state = const AuthState(status: AuthStatus.loading);
     try {
-      final user = await ref.read(authRepositoryProvider).signUp(
-            email: email,
-            password: password,
-          );
-      await ref.read(sessionControllerProvider.notifier).saveSession(
-            authToken: _uuid.v4(),
-            userId: user.id,
-          );
+      final user = await ref
+          .read(authRepositoryProvider)
+          .signUp(email: email, password: password);
+      await ref
+          .read(sessionControllerProvider.notifier)
+          .saveSession(authToken: _uuid.v4(), userId: user.id);
       state = AuthState(status: AuthStatus.authenticated, user: user);
     } on StateError catch (error) {
       state = AuthState(status: AuthStatus.error, message: error.message);
@@ -112,10 +100,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }) async {
     state = state.copyWith(status: AuthStatus.loading, clearMessage: true);
     try {
-      await ref.read(authRepositoryProvider).resetPassword(
-            email: email,
-            newPassword: newPassword,
-          );
+      await ref
+          .read(authRepositoryProvider)
+          .resetPassword(email: email, newPassword: newPassword);
       state = const AuthState(
         status: AuthStatus.unauthenticated,
         message: 'Password updated. Sign in with your new password.',
@@ -130,7 +117,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 }
 
-final authNotifierProvider =
-    StateNotifierProvider<AuthNotifier, AuthState>((Ref ref) {
-      return AuthNotifier(ref);
-    });
+final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>((
+  Ref ref,
+) {
+  return AuthNotifier(ref);
+});

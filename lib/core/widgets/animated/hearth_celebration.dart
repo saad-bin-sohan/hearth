@@ -6,10 +6,7 @@ import 'package:hearth/core/theme/app_animations.dart';
 import 'package:hearth/core/theme/app_colors.dart';
 
 class HearthCelebration extends StatefulWidget {
-  const HearthCelebration({
-    this.onCompleted,
-    super.key,
-  });
+  const HearthCelebration({this.onCompleted, super.key});
 
   final VoidCallback? onCompleted;
 
@@ -86,10 +83,7 @@ class _Particle {
 }
 
 class _CelebrationPainter extends CustomPainter {
-  const _CelebrationPainter({
-    required this.particles,
-    required this.progress,
-  });
+  const _CelebrationPainter({required this.particles, required this.progress});
 
   final List<_Particle> particles;
   final double progress;
@@ -99,7 +93,8 @@ class _CelebrationPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     for (final particle in particles) {
       final dx = center.dx + particle.dx * progress;
-      final dy = center.dy + particle.dy * progress + (progress * progress * 80);
+      final dy =
+          center.dy + particle.dy * progress + (progress * progress * 80);
       final paint = Paint()
         ..color = particle.color.withValues(alpha: 1 - progress);
       canvas.drawCircle(Offset(dx, dy), particle.radius, paint);

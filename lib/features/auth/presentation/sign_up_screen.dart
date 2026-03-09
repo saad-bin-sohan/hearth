@@ -39,9 +39,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
       return;
     }
     if (next.message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(next.message!)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(next.message!)));
       ref.read(authNotifierProvider.notifier).clearMessage();
     }
   }
@@ -59,7 +59,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     final authState = ref.watch(authNotifierProvider);
     return AuthScaffold(
       title: 'Create your account',
-      subtitle: 'Start with a secure local account. Cloud sync arrives in Phase 7.',
+      subtitle:
+          'Start with a secure local account. Cloud sync arrives in Phase 7.',
       footer: Center(
         child: TextButton(
           onPressed: () => context.go(SignInScreen.routePath),
@@ -98,7 +99,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 if (!(_formKey.currentState?.validate() ?? false)) {
                   return;
                 }
-                await ref.read(authNotifierProvider.notifier).signUp(
+                await ref
+                    .read(authNotifierProvider.notifier)
+                    .signUp(
                       email: _emailController.text,
                       password: _passwordController.text,
                     );

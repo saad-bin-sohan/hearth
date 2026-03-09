@@ -25,8 +25,25 @@ class QrPlaceholder extends StatelessWidget {
           crossAxisSpacing: 4,
         ),
         itemBuilder: (BuildContext context, int index) {
-          final filled = <int>{0, 1, 8, 9, 6, 7, 14, 15, 48, 49, 56, 57, 54, 55, 62, 63}
-              .contains(index) ||
+          final filled =
+              <int>{
+                0,
+                1,
+                8,
+                9,
+                6,
+                7,
+                14,
+                15,
+                48,
+                49,
+                56,
+                57,
+                54,
+                55,
+                62,
+                63,
+              }.contains(index) ||
               index.isEven;
           return DecoratedBox(
             decoration: BoxDecoration(

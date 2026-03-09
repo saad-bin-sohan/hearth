@@ -42,9 +42,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
       return;
     }
     if (next.message != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(next.message!)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(next.message!)));
       ref.read(authNotifierProvider.notifier).clearMessage();
     }
   }
@@ -104,7 +104,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 if (!(_formKey.currentState?.validate() ?? false)) {
                   return;
                 }
-                await ref.read(authNotifierProvider.notifier).signIn(
+                await ref
+                    .read(authNotifierProvider.notifier)
+                    .signIn(
                       email: _emailController.text,
                       password: _passwordController.text,
                     );
@@ -115,7 +117,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 if (authState.status != AuthStatus.authenticated) {
                   return;
                 }
-                final household = await ref.read(currentHouseholdProvider.future);
+                final household = await ref.read(
+                  currentHouseholdProvider.future,
+                );
                 if (!context.mounted) {
                   return;
                 }

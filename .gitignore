@@ -58,3 +58,18 @@ app.*.map.json
 *.js.deps
 *.js.map
 .flutter-plugins
+
+# Environment & Secrets
+.env
+.env.*
+*.env.local
+secrets.json
+key.json
+
+# Drift generated files
+*.drift.dart
+
+# Temporary files
+*.tmp
+*.temp
+*.cache

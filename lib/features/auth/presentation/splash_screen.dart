@@ -30,10 +30,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: AppAnimations.slow,
-    )..forward();
+    _controller = AnimationController(vsync: this, duration: AppAnimations.slow)
+      ..forward();
     unawaited(_bootstrap());
   }
 

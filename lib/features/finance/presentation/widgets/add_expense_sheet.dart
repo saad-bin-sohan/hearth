@@ -89,7 +89,9 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
               return const SizedBox.shrink();
             }
             _initialize(value);
-            final amountCents = AppFormatters.centsFromInput(_amountController.text);
+            final amountCents = AppFormatters.centsFromInput(
+              _amountController.text,
+            );
             return Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -98,8 +100,12 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                   children: <Widget>[
                     Text(
                       widget.initialExpense == null
-                          ? (_isRecurring ? 'Add Recurring Bill' : 'Add Expense')
-                          : (_isRecurring ? 'Edit Recurring Bill' : 'Edit Expense'),
+                          ? (_isRecurring
+                                ? 'Add Recurring Bill'
+                                : 'Add Expense')
+                          : (_isRecurring
+                                ? 'Edit Recurring Bill'
+                                : 'Edit Expense'),
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                     const SizedBox(height: AppSpacing.sm),
@@ -111,7 +117,9 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                     HearthTextField(
                       label: 'Amount',
                       controller: _amountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       hintText: '0.00',
                       validator: (String? value) {
                         final cents = AppFormatters.centsFromInput(value ?? '');
@@ -133,14 +141,18 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                       },
                     ),
                     const SizedBox(height: AppSpacing.md),
-                    Text('Category', style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      'Category',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     SizedBox(
                       height: 44,
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: FinanceCategory.values.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(width: AppSpacing.sm),
                         itemBuilder: (BuildContext context, int index) {
                           final category = FinanceCategory.values[index];
                           return HearthChip(
@@ -177,15 +189,22 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                       },
                     ),
                     const SizedBox(height: AppSpacing.lg),
-                    Text('Paid by', style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      'Paid by',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     Wrap(
                       spacing: AppSpacing.sm,
                       runSpacing: AppSpacing.sm,
-                      children: value.participants.map((FinanceParticipant participant) {
+                      children: value.participants.map((
+                        FinanceParticipant participant,
+                      ) {
                         final selected = participant.userId == _payerUserId;
                         return InkWell(
-                          borderRadius: BorderRadius.circular(AppRadius.radiusFull),
+                          borderRadius: BorderRadius.circular(
+                            AppRadius.radiusFull,
+                          ),
                           onTap: () {
                             setState(() {
                               _payerUserId = participant.userId;
@@ -198,14 +217,23 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                             ),
                             decoration: BoxDecoration(
                               color: selected
-                                  ? AppColors.primaryContainerFor(Theme.of(context).brightness)
-                                  : AppColors.surfaceVariantFor(Theme.of(context).brightness),
-                              borderRadius: BorderRadius.circular(AppRadius.radiusFull),
+                                  ? AppColors.primaryContainerFor(
+                                      Theme.of(context).brightness,
+                                    )
+                                  : AppColors.surfaceVariantFor(
+                                      Theme.of(context).brightness,
+                                    ),
+                              borderRadius: BorderRadius.circular(
+                                AppRadius.radiusFull,
+                              ),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: <Widget>[
-                                HearthAvatar(displayName: participant.displayName, size: 32),
+                                HearthAvatar(
+                                  displayName: participant.displayName,
+                                  size: 32,
+                                ),
                                 const SizedBox(width: AppSpacing.sm),
                                 Text(participant.displayName),
                               ],
@@ -260,7 +288,9 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                       const SizedBox(height: AppSpacing.sm),
                       Wrap(
                         spacing: AppSpacing.sm,
-                        children: RecurrenceFrequency.values.map((RecurrenceFrequency frequency) {
+                        children: RecurrenceFrequency.values.map((
+                          RecurrenceFrequency frequency,
+                        ) {
                           return HearthChip(
                             label: _recurrenceLabel(frequency),
                             selected: frequency == _selectedRecurrence,
@@ -289,7 +319,9 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                       Text(
                         actionState.message!,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.errorFor(Theme.of(context).brightness),
+                          color: AppColors.errorFor(
+                            Theme.of(context).brightness,
+                          ),
                         ),
                       ),
                     ],
@@ -299,7 +331,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                       isLoading: actionState.isLoading,
                       onPressed: value.canEdit
                           ? () async {
-                              if (!(_formKey.currentState?.validate() ?? false)) {
+                              if (!(_formKey.currentState?.validate() ??
+                                  false)) {
                                 return;
                               }
                               final draft = _buildDraft(value);
@@ -309,9 +342,13 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
                               }
                               try {
                                 if (widget.initialExpense == null) {
-                                  await ref.read(financeNotifierProvider.notifier).addExpense(draft);
+                                  await ref
+                                      .read(financeNotifierProvider.notifier)
+                                      .addExpense(draft);
                                 } else {
-                                  await ref.read(financeNotifierProvider.notifier).updateExpense(draft);
+                                  await ref
+                                      .read(financeNotifierProvider.notifier)
+                                      .updateExpense(draft);
                                 }
                                 if (!context.mounted) {
                                   return;
@@ -359,7 +396,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
     } else if (splitRule is FixedSplitRule) {
       _selectedSplitType = SplitRuleType.fixed;
       for (final entry in splitRule.amountsCents.entries) {
-        _fixedControllers[entry.key]?.text = (entry.value / 100).toStringAsFixed(2);
+        _fixedControllers[entry.key]?.text = (entry.value / 100)
+            .toStringAsFixed(2);
       }
     } else if (splitRule is ExemptionSplitRule) {
       _selectedSplitType = SplitRuleType.exemption;
@@ -372,7 +410,8 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
       final base = 100 ~/ participants.length;
       final remainder = 100 % participants.length;
       for (var index = 0; index < participants.length; index += 1) {
-        _percentages[participants[index].userId] = base + (index < remainder ? 1 : 0);
+        _percentages[participants[index].userId] =
+            base + (index < remainder ? 1 : 0);
       }
     }
     _initialized = true;
@@ -417,26 +456,28 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
     if (amountCents == null || amountCents <= 0 || _payerUserId == null) {
       return null;
     }
-    final participantIds = context.participants.map((FinanceParticipant participant) {
+    final participantIds = context.participants.map((
+      FinanceParticipant participant,
+    ) {
       return participant.userId;
     }).toList();
     final splitRule = switch (_selectedSplitType) {
       SplitRuleType.equal => EqualSplitRule(participantUserIds: participantIds),
       SplitRuleType.percentage => PercentageSplitRule(
-          participantUserIds: participantIds,
-          percentages: _percentages,
-        ),
+        participantUserIds: participantIds,
+        percentages: _percentages,
+      ),
       SplitRuleType.fixed => FixedSplitRule(
-          participantUserIds: participantIds,
-          amountsCents: <String, int>{
-            for (final entry in _fixedControllers.entries)
-              entry.key: AppFormatters.centsFromInput(entry.value.text) ?? 0,
-          },
-        ),
+        participantUserIds: participantIds,
+        amountsCents: <String, int>{
+          for (final entry in _fixedControllers.entries)
+            entry.key: AppFormatters.centsFromInput(entry.value.text) ?? 0,
+        },
+      ),
       SplitRuleType.exemption => ExemptionSplitRule(
-          participantUserIds: participantIds,
-          exemptUserIds: _exemptUserIds.toList(),
-        ),
+        participantUserIds: participantIds,
+        exemptUserIds: _exemptUserIds.toList(),
+      ),
     };
 
     return ExpenseDraft(
@@ -456,7 +497,9 @@ class _AddExpenseSheetState extends ConsumerState<AddExpenseSheet> {
               anchorDate: _selectedDate,
             )
           : null,
-      notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
+      notes: _notesController.text.trim().isEmpty
+          ? null
+          : _notesController.text.trim(),
       receiptReference: widget.initialExpense?.receiptReference,
       sourceRecurringExpenseId: widget.initialExpense?.sourceRecurringExpenseId,
       nextDueAt: _isRecurring ? _selectedDate : null,

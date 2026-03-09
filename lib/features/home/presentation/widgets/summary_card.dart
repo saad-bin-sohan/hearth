@@ -39,9 +39,9 @@ class SummaryCard extends StatelessWidget {
             ),
             HearthNumberTicker(
               value: metric,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: accentColor,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(color: accentColor),
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(

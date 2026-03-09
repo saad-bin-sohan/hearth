@@ -8,10 +8,7 @@ import 'package:hearth/features/finance/domain/finance_models.dart';
 import 'package:hearth/features/finance/presentation/finance_notifier.dart';
 
 class BudgetEditorSheet extends ConsumerStatefulWidget {
-  const BudgetEditorSheet({
-    required this.progress,
-    super.key,
-  });
+  const BudgetEditorSheet({required this.progress, super.key});
 
   final BudgetProgress progress;
 
@@ -63,7 +60,9 @@ class _BudgetEditorSheetState extends ConsumerState<BudgetEditorSheet> {
             HearthTextField(
               label: 'Monthly limit',
               controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               hintText: '0.00',
             ),
             const SizedBox(height: AppSpacing.lg),
@@ -71,8 +70,12 @@ class _BudgetEditorSheetState extends ConsumerState<BudgetEditorSheet> {
               label: 'Save Budget',
               isLoading: financeState.isLoading,
               onPressed: () async {
-                final limit = AppFormatters.centsFromInput(_amountController.text);
-                await ref.read(financeNotifierProvider.notifier).setBudget(
+                final limit = AppFormatters.centsFromInput(
+                  _amountController.text,
+                );
+                await ref
+                    .read(financeNotifierProvider.notifier)
+                    .setBudget(
                       category: widget.progress.category,
                       limitCents: limit,
                     );
@@ -87,7 +90,9 @@ class _BudgetEditorSheetState extends ConsumerState<BudgetEditorSheet> {
               label: 'Clear Budget',
               variant: HearthButtonVariant.ghost,
               onPressed: () async {
-                await ref.read(financeNotifierProvider.notifier).setBudget(
+                await ref
+                    .read(financeNotifierProvider.notifier)
+                    .setBudget(
                       category: widget.progress.category,
                       limitCents: null,
                     );

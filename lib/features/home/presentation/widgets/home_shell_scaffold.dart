@@ -6,6 +6,8 @@ import 'package:hearth/core/theme/app_colors.dart';
 import 'package:hearth/core/theme/app_dimensions.dart';
 import 'package:hearth/core/widgets/animated/hearth_fab_entry.dart';
 import 'package:hearth/core/widgets/hearth_bottom_sheet.dart';
+import 'package:hearth/features/chores/presentation/chore_notifier.dart';
+import 'package:hearth/features/chores/presentation/widgets/add_edit_chore_sheet.dart';
 import 'package:hearth/features/finance/presentation/finance_notifier.dart';
 import 'package:hearth/features/finance/presentation/widgets/add_expense_sheet.dart';
 import 'package:hearth/features/home/presentation/widgets/more_modules_sheet.dart';
@@ -20,6 +22,7 @@ class HomeShellScaffold extends ConsumerWidget {
       <({String label, IconData icon})>[
         (label: 'Home', icon: HugeIcons.strokeRoundedHome03),
         (label: 'Finance', icon: HugeIcons.strokeRoundedComputerDollar),
+        (label: 'Chores', icon: HugeIcons.strokeRoundedCheckList),
         (label: 'Household', icon: HugeIcons.strokeRoundedHouse03),
         (label: 'Settings', icon: HugeIcons.strokeRoundedSettings02),
         (label: 'More', icon: HugeIcons.strokeRoundedMoreHorizontal),
@@ -28,18 +31,30 @@ class HomeShellScaffold extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(financeBootstrapProvider);
+    ref.watch(choresBootstrapProvider);
     final brightness = Theme.of(context).brightness;
-    final showFab = navigationShell.currentIndex == 0 || navigationShell.currentIndex == 1;
+    final showFab =
+        navigationShell.currentIndex == 0 ||
+        navigationShell.currentIndex == 1 ||
+        navigationShell.currentIndex == 2;
     return Scaffold(
       body: navigationShell,
       floatingActionButton: showFab
           ? HearthFABEntry(
               child: FloatingActionButton.extended(
-                onPressed: () => showAddExpenseSheet(context),
+                onPressed: () {
+                  if (navigationShell.currentIndex == 2) {
+                    showAddEditChoreSheet(context);
+                    return;
+                  }
+                  showAddExpenseSheet(context);
+                },
                 icon: const Icon(HugeIcons.strokeRoundedAddCircle),
-                label: Text(
-                  navigationShell.currentIndex == 1 ? 'Add Expense' : 'Quick Add',
-                ),
+                label: Text(switch (navigationShell.currentIndex) {
+                  1 => 'Add Expense',
+                  2 => 'Add Chore',
+                  _ => 'Quick Add',
+                }),
               ),
             )
           : null,
@@ -62,14 +77,17 @@ class HomeShellScaffold extends ConsumerWidget {
               child: InkWell(
                 borderRadius: BorderRadius.circular(AppRadius.radiusLg),
                 onTap: () {
-                  if (index == 4) {
+                  if (index == _items.length - 1) {
                     showHearthBottomSheet<void>(
                       context: context,
                       builder: (context) => const MoreModulesSheet(),
                     );
                     return;
                   }
-                  navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
+                  navigationShell.goBranch(
+                    index,
+                    initialLocation: index == navigationShell.currentIndex,
+                  );
                 },
                 child: AnimatedContainer(
                   duration: AppAnimations.fast,
@@ -87,7 +105,9 @@ class HomeShellScaffold extends ConsumerWidget {
                           color: active
                               ? AppColors.primaryFor(brightness)
                               : Colors.transparent,
-                          borderRadius: BorderRadius.circular(AppRadius.radiusFull),
+                          borderRadius: BorderRadius.circular(
+                            AppRadius.radiusFull,
+                          ),
                         ),
                       ),
                       const SizedBox(height: AppSpacing.sm),

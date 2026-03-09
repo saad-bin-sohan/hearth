@@ -57,7 +57,10 @@ class AuthScaffold extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(title, style: Theme.of(context).textTheme.headlineLarge),
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.headlineLarge,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     Text(
                       subtitle,

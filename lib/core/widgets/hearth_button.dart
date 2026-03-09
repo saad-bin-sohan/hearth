@@ -66,9 +66,9 @@ class HearthButton extends StatelessWidget {
         border: Border.all(color: colors.border),
       ),
       child: DefaultTextStyle(
-        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-          color: colors.foreground,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.labelLarge!.copyWith(color: colors.foreground),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,

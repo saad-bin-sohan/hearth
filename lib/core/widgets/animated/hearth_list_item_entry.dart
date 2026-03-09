@@ -4,11 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hearth/core/theme/app_animations.dart';
 
 class HearthListItemEntry extends StatefulWidget {
-  const HearthListItemEntry({
-    required this.child,
-    this.index = 0,
-    super.key,
-  });
+  const HearthListItemEntry({required this.child, this.index = 0, super.key});
 
   final Widget child;
   final int index;

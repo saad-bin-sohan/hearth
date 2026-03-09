@@ -53,20 +53,20 @@ class SplitRuleConfigurator extends StatelessWidget {
         switch (selectedType) {
           SplitRuleType.equal => _EqualRulePreview(participants: participants),
           SplitRuleType.percentage => _PercentageRuleEditor(
-              participants: participants,
-              percentages: percentages,
-              onChanged: onPercentageChanged,
-            ),
+            participants: participants,
+            percentages: percentages,
+            onChanged: onPercentageChanged,
+          ),
           SplitRuleType.fixed => _FixedRuleEditor(
-              participants: participants,
-              fixedControllers: fixedControllers,
-              amountCents: amountCents,
-            ),
+            participants: participants,
+            fixedControllers: fixedControllers,
+            amountCents: amountCents,
+          ),
           SplitRuleType.exemption => _ExemptionRuleEditor(
-              participants: participants,
-              exemptUserIds: exemptUserIds,
-              onToggle: onExemptionToggled,
-            ),
+            participants: participants,
+            exemptUserIds: exemptUserIds,
+            onToggle: onExemptionToggled,
+          ),
         },
       ],
     );
@@ -83,9 +83,7 @@ class SplitRuleConfigurator extends StatelessWidget {
 }
 
 class _EqualRulePreview extends StatelessWidget {
-  const _EqualRulePreview({
-    required this.participants,
-  });
+  const _EqualRulePreview({required this.participants});
 
   final List<FinanceParticipant> participants;
 
@@ -111,7 +109,10 @@ class _PercentageRuleEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = percentages.values.fold<int>(0, (int left, int right) => left + right);
+    final total = percentages.values.fold<int>(
+      0,
+      (int left, int right) => left + right,
+    );
     return Column(
       children: <Widget>[
         for (final participant in participants) ...<Widget>[
@@ -135,10 +136,8 @@ class _PercentageRuleEditor extends StatelessWidget {
             max: 100,
             divisions: 100,
             label: '${percentages[participant.userId] ?? 0}%',
-            onChanged: (double value) => onChanged(
-              participant.userId,
-              value.round(),
-            ),
+            onChanged: (double value) =>
+                onChanged(participant.userId, value.round()),
           ),
         ],
         Align(

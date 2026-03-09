@@ -7,10 +7,7 @@ class AppFormatters {
     return amountCents / 100;
   }
 
-  static String currency({
-    required num amount,
-    required String currencyCode,
-  }) {
+  static String currency({required num amount, required String currencyCode}) {
     return NumberFormat.simpleCurrency(name: currencyCode).format(amount);
   }
 
@@ -25,7 +22,9 @@ class AppFormatters {
   }
 
   static int? centsFromInput(String value) {
-    final sanitized = value.replaceAll(RegExp(r'[^0-9\.\,]'), '').replaceAll(',', '.');
+    final sanitized = value
+        .replaceAll(RegExp(r'[^0-9\.\,]'), '')
+        .replaceAll(',', '.');
     if (sanitized.isEmpty) {
       return null;
     }

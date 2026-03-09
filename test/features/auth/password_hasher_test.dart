@@ -7,19 +7,11 @@ void main() {
     final hash = hasher.createHash('SecurePass1');
 
     expect(
-      hasher.verify(
-        password: 'SecurePass1',
-        hash: hash.hash,
-        salt: hash.salt,
-      ),
+      hasher.verify(password: 'SecurePass1', hash: hash.hash, salt: hash.salt),
       isTrue,
     );
     expect(
-      hasher.verify(
-        password: 'WrongPass1',
-        hash: hash.hash,
-        salt: hash.salt,
-      ),
+      hasher.verify(password: 'WrongPass1', hash: hash.hash, salt: hash.salt),
       isFalse,
     );
   });

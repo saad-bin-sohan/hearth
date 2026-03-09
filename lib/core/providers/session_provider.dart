@@ -70,7 +70,7 @@ final sessionRepositoryProvider = Provider<SessionRepository>((Ref ref) {
 
 class SessionController extends StateNotifier<SessionSnapshot> {
   SessionController(this.ref)
-      : super(const SessionSnapshot(isReady: false, onboardingComplete: false)) {
+    : super(const SessionSnapshot(isReady: false, onboardingComplete: false)) {
     bootstrap();
   }
 
@@ -106,7 +106,10 @@ class SessionController extends StateNotifier<SessionSnapshot> {
 
   Future<void> setActiveHousehold(String? householdId) async {
     await ref.read(sessionRepositoryProvider).setActiveHouseholdId(householdId);
-    state = state.copyWith(activeHouseholdId: householdId, clearHousehold: householdId == null);
+    state = state.copyWith(
+      activeHouseholdId: householdId,
+      clearHousehold: householdId == null,
+    );
   }
 }
 

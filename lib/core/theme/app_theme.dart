@@ -36,7 +36,9 @@ class AppTheme {
       shadow: AppColors.shadowFor(brightness),
       scrim: AppColors.overlay,
       inverseSurface: isDark ? AppColors.background : AppColors.surfaceDark,
-      onInverseSurface: isDark ? AppColors.textPrimary : AppColors.textPrimaryDark,
+      onInverseSurface: isDark
+          ? AppColors.textPrimary
+          : AppColors.textPrimaryDark,
       inversePrimary: isDark ? AppColors.primary : AppColors.primaryDark,
     );
 
@@ -159,7 +161,9 @@ class AppTheme {
           backgroundColor: WidgetStatePropertyAll<Color>(
             AppColors.primaryFor(brightness),
           ),
-          foregroundColor: const WidgetStatePropertyAll<Color>(AppColors.surface),
+          foregroundColor: const WidgetStatePropertyAll<Color>(
+            AppColors.surface,
+          ),
           textStyle: WidgetStatePropertyAll<TextStyle>(
             AppTextStyles.labelLarge.copyWith(color: AppColors.surface),
           ),

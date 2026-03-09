@@ -34,15 +34,15 @@ class SplitEngine {
     });
   }
 
-  List<SplitAllocation> _percentage(
-    int totalCents,
-    PercentageSplitRule rule,
-  ) {
+  List<SplitAllocation> _percentage(int totalCents, PercentageSplitRule rule) {
     final percentages = <String, int>{};
     for (final participant in rule.participantUserIds) {
       percentages[participant] = rule.percentages[participant] ?? 0;
     }
-    final sum = percentages.values.fold<int>(0, (int left, int right) => left + right);
+    final sum = percentages.values.fold<int>(
+      0,
+      (int left, int right) => left + right,
+    );
     if (sum != 100) {
       throw StateError('Percentages must add up to 100.');
     }
@@ -91,7 +91,9 @@ class SplitEngine {
       (int total, SplitAllocation entry) => total + entry.amountCents,
     );
     if (sum != totalCents) {
-      throw StateError('Fixed allocations must equal the expense total exactly.');
+      throw StateError(
+        'Fixed allocations must equal the expense total exactly.',
+      );
     }
     return allocations;
   }
@@ -101,12 +103,16 @@ class SplitEngine {
         .where((String userId) => !rule.exemptUserIds.contains(userId))
         .toList();
     if (eligible.isEmpty) {
-      throw StateError('At least one participant must remain after exemptions.');
+      throw StateError(
+        'At least one participant must remain after exemptions.',
+      );
     }
     final equal = _equal(totalCents, eligible);
     final allocations = <SplitAllocation>[];
     for (final participant in rule.participantUserIds) {
-      final match = equal.where((SplitAllocation entry) => entry.userId == participant);
+      final match = equal.where(
+        (SplitAllocation entry) => entry.userId == participant,
+      );
       allocations.add(
         SplitAllocation(
           userId: participant,

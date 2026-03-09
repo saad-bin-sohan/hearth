@@ -4,10 +4,10 @@ enum HouseholdRole { admin, member, observer }
 
 extension HouseholdRoleX on HouseholdRole {
   String get label => switch (this) {
-        HouseholdRole.admin => 'Admin',
-        HouseholdRole.member => 'Member',
-        HouseholdRole.observer => 'Observer',
-      };
+    HouseholdRole.admin => 'Admin',
+    HouseholdRole.member => 'Member',
+    HouseholdRole.observer => 'Observer',
+  };
 }
 
 class HouseholdEntity extends Equatable {
@@ -35,16 +35,16 @@ class HouseholdEntity extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        name,
-        emoji,
-        avatarColorKey,
-        currencyCode,
-        inviteCode,
-        createdByUserId,
-        createdAt,
-        updatedAt,
-      ];
+    id,
+    name,
+    emoji,
+    avatarColorKey,
+    currencyCode,
+    inviteCode,
+    createdByUserId,
+    createdAt,
+    updatedAt,
+  ];
 }
 
 class HouseholdMember extends Equatable {
@@ -66,13 +66,13 @@ class HouseholdMember extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        membershipId,
-        userId,
-        displayName,
-        email,
-        role,
-        joinedAt,
-      ];
+    membershipId,
+    userId,
+    displayName,
+    email,
+    role,
+    joinedAt,
+  ];
 }
 
 class HouseholdInvitePreview extends Equatable {

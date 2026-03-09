@@ -15,10 +15,15 @@ class MoreModulesSheet extends StatelessWidget {
     final brightness = Theme.of(context).brightness;
     final lockedColor = AppColors.textTertiaryFor(brightness);
     final lockedModules = <({String title, IconData icon})>[
-      (title: 'Chore Manager', icon: HugeIcons.strokeRoundedCheckList),
-      (title: 'Document Vault', icon: HugeIcons.strokeRoundedDocumentValidation),
+      (
+        title: 'Document Vault',
+        icon: HugeIcons.strokeRoundedDocumentValidation,
+      ),
       (title: 'Grocery & Pantry', icon: HugeIcons.strokeRoundedBookmark01),
-      (title: 'Maintenance Ledger', icon: HugeIcons.strokeRoundedCalendarSetting01),
+      (
+        title: 'Maintenance Ledger',
+        icon: HugeIcons.strokeRoundedCalendarSetting01,
+      ),
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,9 +61,9 @@ class MoreModulesSheet extends StatelessWidget {
                   Expanded(
                     child: Text(
                       item.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: lockedColor,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.titleMedium?.copyWith(color: lockedColor),
                     ),
                   ),
                   Icon(HugeIcons.strokeRoundedLock, color: lockedColor),

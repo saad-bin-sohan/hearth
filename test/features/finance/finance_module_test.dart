@@ -53,10 +53,8 @@ void main() {
   });
 }
 
-Future<({
-  SharedPreferences preferences,
-  AppDatabase database,
-})> _createAuthenticatedAppState() async {
+Future<({SharedPreferences preferences, AppDatabase database})>
+_createAuthenticatedAppState() async {
   SharedPreferences.setMockInitialValues(<String, Object>{
     'onboarding_complete': true,
     'auth_token': 'token-1',

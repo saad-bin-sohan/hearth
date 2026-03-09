@@ -21,9 +21,9 @@ class LocalAuthRepository implements AuthRepository {
     required AppDatabase database,
     required PasswordHasher passwordHasher,
     required Uuid uuid,
-  })  : _database = database,
-        _passwordHasher = passwordHasher,
-        _uuid = uuid;
+  }) : _database = database,
+       _passwordHasher = passwordHasher,
+       _uuid = uuid;
 
   final AppDatabase _database;
   final PasswordHasher _passwordHasher;
@@ -116,17 +116,19 @@ class LocalAuthRepository implements AuthRepository {
     final id = _uuid.v4();
     final displayName = normalized.split('@').first.titleCase;
 
-    await _database.into(_database.users).insert(
-      UsersCompanion.insert(
-        id: id,
-        email: normalized,
-        displayName: displayName,
-        passwordHash: hash.hash,
-        passwordSalt: hash.salt,
-        createdAt: now,
-        updatedAt: now,
-      ),
-    );
+    await _database
+        .into(_database.users)
+        .insert(
+          UsersCompanion.insert(
+            id: id,
+            email: normalized,
+            displayName: displayName,
+            passwordHash: hash.hash,
+            passwordSalt: hash.salt,
+            createdAt: now,
+            updatedAt: now,
+          ),
+        );
 
     return AppUser(
       id: id,

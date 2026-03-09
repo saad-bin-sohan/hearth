@@ -54,9 +54,7 @@ class AppColors {
   }
 
   static Color surfaceVariantFor(Brightness brightness) {
-    return brightness == Brightness.dark
-        ? surfaceVariantDark
-        : surfaceVariant;
+    return brightness == Brightness.dark ? surfaceVariantDark : surfaceVariant;
   }
 
   static Color primaryFor(Brightness brightness) {
@@ -111,6 +109,16 @@ class AppColors {
 
   static Color errorFor(Brightness brightness) {
     return brightness == Brightness.dark ? errorDark : error;
+  }
+
+  static Color warningFor(Brightness brightness) {
+    return brightness == Brightness.dark ? accentDark : warning;
+  }
+
+  static Color warningContainerFor(Brightness brightness) {
+    return brightness == Brightness.dark
+        ? accentContainerDark
+        : warningContainer;
   }
 
   static Color shadowFor(Brightness brightness) {

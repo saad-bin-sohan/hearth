@@ -30,16 +30,13 @@ void main() {
       settlements: const <SettlementComputationInput>[],
     );
 
-    expect(
-      result,
-      const <BalanceResult>[
-        BalanceResult(
-          debtorUserId: 'bob',
-          creditorUserId: 'alice',
-          amountCents: 100,
-        ),
-      ],
-    );
+    expect(result, const <BalanceResult>[
+      BalanceResult(
+        debtorUserId: 'bob',
+        creditorUserId: 'alice',
+        amountCents: 100,
+      ),
+    ]);
   });
 
   test('subtracts completed settlements and ignores pending ones', () {
@@ -71,20 +68,17 @@ void main() {
       ],
     );
 
-    expect(
-      result,
-      const <BalanceResult>[
-        BalanceResult(
-          debtorUserId: 'bob',
-          creditorUserId: 'alice',
-          amountCents: 400,
-        ),
-        BalanceResult(
-          debtorUserId: 'charlie',
-          creditorUserId: 'alice',
-          amountCents: 250,
-        ),
-      ],
-    );
+    expect(result, const <BalanceResult>[
+      BalanceResult(
+        debtorUserId: 'bob',
+        creditorUserId: 'alice',
+        amountCents: 400,
+      ),
+      BalanceResult(
+        debtorUserId: 'charlie',
+        creditorUserId: 'alice',
+        amountCents: 250,
+      ),
+    ]);
   });
 }

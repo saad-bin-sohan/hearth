@@ -4,10 +4,7 @@ import 'package:hearth/features/finance/data/local_finance_repository.dart';
 import 'package:hearth/features/finance/domain/finance_models.dart';
 
 class FinanceActionState {
-  const FinanceActionState({
-    this.isLoading = false,
-    this.message,
-  });
+  const FinanceActionState({this.isLoading = false, this.message});
 
   final bool isLoading;
   final String? message;
@@ -36,10 +33,9 @@ class FinanceNotifier extends StateNotifier<FinanceActionState> {
     }
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      final expense = await ref.read(financeRepositoryProvider).addExpense(
-            actorUserId: actorUserId,
-            draft: draft,
-          );
+      final expense = await ref
+          .read(financeRepositoryProvider)
+          .addExpense(actorUserId: actorUserId, draft: draft);
       _invalidateFinanceData();
       state = state.copyWith(isLoading: false, clearMessage: true);
       return expense;
@@ -56,10 +52,9 @@ class FinanceNotifier extends StateNotifier<FinanceActionState> {
     }
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      final expense = await ref.read(financeRepositoryProvider).updateExpense(
-            actorUserId: actorUserId,
-            draft: draft,
-          );
+      final expense = await ref
+          .read(financeRepositoryProvider)
+          .updateExpense(actorUserId: actorUserId, draft: draft);
       _invalidateFinanceData();
       ref.invalidate(financeExpenseProvider(expense.id));
       state = state.copyWith(isLoading: false, clearMessage: true);
@@ -77,10 +72,9 @@ class FinanceNotifier extends StateNotifier<FinanceActionState> {
     }
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      await ref.read(financeRepositoryProvider).deleteExpense(
-            actorUserId: actorUserId,
-            expenseId: expenseId,
-          );
+      await ref
+          .read(financeRepositoryProvider)
+          .deleteExpense(actorUserId: actorUserId, expenseId: expenseId);
       _invalidateFinanceData();
       ref.invalidate(financeExpenseProvider(expenseId));
       state = state.copyWith(isLoading: false, clearMessage: true);
@@ -102,7 +96,9 @@ class FinanceNotifier extends StateNotifier<FinanceActionState> {
     }
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      await ref.read(financeRepositoryProvider).setBudget(
+      await ref
+          .read(financeRepositoryProvider)
+          .setBudget(
             actorUserId: actorUserId,
             householdId: householdId,
             category: category,
@@ -130,7 +126,9 @@ class FinanceNotifier extends StateNotifier<FinanceActionState> {
     }
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      final settlement = await ref.read(financeRepositoryProvider).requestSettlement(
+      final settlement = await ref
+          .read(financeRepositoryProvider)
+          .requestSettlement(
             actorUserId: actorUserId,
             householdId: householdId,
             debtorUserId: debtorUserId,
@@ -154,7 +152,9 @@ class FinanceNotifier extends StateNotifier<FinanceActionState> {
     }
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      final settlement = await ref.read(financeRepositoryProvider).confirmSettlement(
+      final settlement = await ref
+          .read(financeRepositoryProvider)
+          .confirmSettlement(
             actorUserId: actorUserId,
             settlementId: settlementId,
           );
@@ -174,7 +174,9 @@ class FinanceNotifier extends StateNotifier<FinanceActionState> {
     }
     state = state.copyWith(isLoading: true, clearMessage: true);
     try {
-      await ref.read(financeRepositoryProvider).cancelSettlement(
+      await ref
+          .read(financeRepositoryProvider)
+          .cancelSettlement(
             actorUserId: actorUserId,
             settlementId: settlementId,
           );
@@ -222,10 +224,9 @@ final financeContextProvider = FutureProvider<FinanceContext?>((Ref ref) async {
   if (householdId == null || userId == null) {
     return null;
   }
-  return ref.watch(financeRepositoryProvider).getContext(
-        householdId: householdId,
-        userId: userId,
-      );
+  return ref
+      .watch(financeRepositoryProvider)
+      .getContext(householdId: householdId, userId: userId);
 });
 
 final financeBootstrapProvider = FutureProvider<void>((Ref ref) async {
@@ -233,9 +234,9 @@ final financeBootstrapProvider = FutureProvider<void>((Ref ref) async {
   if (householdId == null) {
     return;
   }
-  await ref.watch(financeRepositoryProvider).reconcileRecurringBillsOnLaunch(
-        householdId,
-      );
+  await ref
+      .watch(financeRepositoryProvider)
+      .reconcileRecurringBillsOnLaunch(householdId);
   ref.invalidate(financeDashboardProvider);
   ref.invalidate(financeRecentExpensesProvider);
   ref.invalidate(financeRecurringTemplatesProvider);
@@ -245,52 +246,66 @@ final financeBootstrapProvider = FutureProvider<void>((Ref ref) async {
   ref.invalidate(financeActivityProvider);
 });
 
-final financeDashboardProvider = FutureProvider<FinanceDashboardData?>((Ref ref) async {
+final financeDashboardProvider = FutureProvider<FinanceDashboardData?>((
+  Ref ref,
+) async {
   final householdId = ref.watch(financeHouseholdIdProvider);
   final userId = ref.watch(financeCurrentUserIdProvider);
   if (householdId == null || userId == null) {
     return null;
   }
-  return ref.watch(financeRepositoryProvider).getDashboard(
-        householdId: householdId,
-        userId: userId,
-      );
+  return ref
+      .watch(financeRepositoryProvider)
+      .getDashboard(householdId: householdId, userId: userId);
 });
 
-final financeHomeSummaryProvider = FutureProvider<FinanceHomeSummary?>((Ref ref) async {
+final financeHomeSummaryProvider = FutureProvider<FinanceHomeSummary?>((
+  Ref ref,
+) async {
   final householdId = ref.watch(financeHouseholdIdProvider);
   final userId = ref.watch(financeCurrentUserIdProvider);
   if (householdId == null || userId == null) {
     return null;
   }
-  return ref.watch(financeRepositoryProvider).getHomeSummary(
-        householdId: householdId,
-        userId: userId,
-      );
+  return ref
+      .watch(financeRepositoryProvider)
+      .getHomeSummary(householdId: householdId, userId: userId);
 });
 
-final financeActivityProvider = FutureProvider<List<FinanceActivityItem>>((Ref ref) async {
+final financeActivityProvider = FutureProvider<List<FinanceActivityItem>>((
+  Ref ref,
+) async {
   final householdId = ref.watch(financeHouseholdIdProvider);
   if (householdId == null) {
     return const <FinanceActivityItem>[];
   }
-  return ref.watch(financeRepositoryProvider).getRecentActivity(householdId: householdId);
+  return ref
+      .watch(financeRepositoryProvider)
+      .getRecentActivity(householdId: householdId);
 });
 
-final financeRecentExpensesProvider = FutureProvider<List<ExpenseEntity>>((Ref ref) async {
+final financeRecentExpensesProvider = FutureProvider<List<ExpenseEntity>>((
+  Ref ref,
+) async {
   final householdId = ref.watch(financeHouseholdIdProvider);
   if (householdId == null) {
     return const <ExpenseEntity>[];
   }
-  return ref.watch(financeRepositoryProvider).getRecentExpenses(householdId: householdId);
+  return ref
+      .watch(financeRepositoryProvider)
+      .getRecentExpenses(householdId: householdId);
 });
 
-final financeRecurringTemplatesProvider = FutureProvider<List<ExpenseEntity>>((Ref ref) async {
+final financeRecurringTemplatesProvider = FutureProvider<List<ExpenseEntity>>((
+  Ref ref,
+) async {
   final householdId = ref.watch(financeHouseholdIdProvider);
   if (householdId == null) {
     return const <ExpenseEntity>[];
   }
-  return ref.watch(financeRepositoryProvider).getRecurringTemplates(householdId: householdId);
+  return ref
+      .watch(financeRepositoryProvider)
+      .getRecurringTemplates(householdId: householdId);
 });
 
 final financeExpenseProvider = FutureProvider.family<ExpenseEntity?, String>((
@@ -300,34 +315,48 @@ final financeExpenseProvider = FutureProvider.family<ExpenseEntity?, String>((
   return ref.watch(financeRepositoryProvider).getExpenseById(expenseId);
 });
 
-final financeBalancesProvider = FutureProvider<List<BalanceEntity>>((Ref ref) async {
+final financeBalancesProvider = FutureProvider<List<BalanceEntity>>((
+  Ref ref,
+) async {
   final householdId = ref.watch(financeHouseholdIdProvider);
   if (householdId == null) {
     return const <BalanceEntity>[];
   }
-  return ref.watch(financeRepositoryProvider).getBalances(householdId: householdId);
+  return ref
+      .watch(financeRepositoryProvider)
+      .getBalances(householdId: householdId);
 });
 
-final financeBudgetProgressProvider = FutureProvider<List<BudgetProgress>>((Ref ref) async {
+final financeBudgetProgressProvider = FutureProvider<List<BudgetProgress>>((
+  Ref ref,
+) async {
   final householdId = ref.watch(financeHouseholdIdProvider);
   if (householdId == null) {
     return const <BudgetProgress>[];
   }
-  return ref.watch(financeRepositoryProvider).getBudgetProgress(householdId: householdId);
+  return ref
+      .watch(financeRepositoryProvider)
+      .getBudgetProgress(householdId: householdId);
 });
 
-final financePendingSettlementsProvider = FutureProvider<List<SettlementEntity>>((Ref ref) async {
-  final dashboard = await ref.watch(financeDashboardProvider.future);
-  return dashboard?.pendingSettlements ?? const <SettlementEntity>[];
-});
+final financePendingSettlementsProvider =
+    FutureProvider<List<SettlementEntity>>((Ref ref) async {
+      final dashboard = await ref.watch(financeDashboardProvider.future);
+      return dashboard?.pendingSettlements ?? const <SettlementEntity>[];
+    });
 
 final financePendingSettlementForBalanceProvider =
-    FutureProvider.family<SettlementEntity?, BalanceEntity>((Ref ref, BalanceEntity balance) async {
+    FutureProvider.family<SettlementEntity?, BalanceEntity>((
+      Ref ref,
+      BalanceEntity balance,
+    ) async {
       final householdId = ref.watch(financeHouseholdIdProvider);
       if (householdId == null) {
         return null;
       }
-      return ref.watch(financeRepositoryProvider).getPendingSettlementForPair(
+      return ref
+          .watch(financeRepositoryProvider)
+          .getPendingSettlementForPair(
             householdId: householdId,
             debtorUserId: balance.debtorUserId,
             creditorUserId: balance.creditorUserId,

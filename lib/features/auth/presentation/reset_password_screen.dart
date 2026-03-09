@@ -17,7 +17,8 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
   final String email;
 
   @override
-  ConsumerState<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  ConsumerState<ResetPasswordScreen> createState() =>
+      _ResetPasswordScreenState();
 }
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
@@ -68,7 +69,9 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                 if (!(_formKey.currentState?.validate() ?? false)) {
                   return;
                 }
-                await ref.read(authNotifierProvider.notifier).resetPassword(
+                await ref
+                    .read(authNotifierProvider.notifier)
+                    .resetPassword(
                       email: widget.email,
                       newPassword: _passwordController.text,
                     );

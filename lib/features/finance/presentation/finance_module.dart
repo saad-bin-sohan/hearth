@@ -42,9 +42,9 @@ class _FinanceModuleState extends ConsumerState<FinanceModule> {
         if (!mounted || next.message == null) {
           return;
         }
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.message!)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.message!)));
         ref.read(financeNotifierProvider.notifier).clearMessage();
       },
     );
@@ -105,10 +105,7 @@ class _FinanceModuleState extends ConsumerState<FinanceModule> {
                     Expanded(
                       child: TabBarView(
                         children: <Widget>[
-                          _ExpensesTab(
-                            contextValue: value,
-                            dashboard: data,
-                          ),
+                          _ExpensesTab(contextValue: value, dashboard: data),
                           _BillsTab(contextValue: value),
                           _BudgetTab(contextValue: value),
                         ],
@@ -235,10 +232,7 @@ class _FinanceSummaryCard extends StatelessWidget {
 }
 
 class _MiniStat extends StatelessWidget {
-  const _MiniStat({
-    required this.label,
-    required this.value,
-  });
+  const _MiniStat({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -257,10 +251,7 @@ class _MiniStat extends StatelessWidget {
 }
 
 class _ExpensesTab extends ConsumerWidget {
-  const _ExpensesTab({
-    required this.contextValue,
-    required this.dashboard,
-  });
+  const _ExpensesTab({required this.contextValue, required this.dashboard});
 
   final FinanceContext contextValue;
   final FinanceDashboardData dashboard;
@@ -273,14 +264,16 @@ class _ExpensesTab extends ConsumerWidget {
       children: <Widget>[
         const HearthSectionHeader(
           title: 'Outstanding balances',
-          subtitle: 'Net pair balances stay simplified after every expense and settlement.',
+          subtitle:
+              'Net pair balances stay simplified after every expense and settlement.',
         ),
         const SizedBox(height: AppSpacing.sm),
         if (dashboard.balances.isEmpty)
           const HearthEmptyState(
             icon: HugeIcons.strokeRoundedComputerDollar,
             title: 'No balances are outstanding',
-            body: 'Add the first shared expense to start tracking who owes whom.',
+            body:
+                'Add the first shared expense to start tracking who owes whom.',
           )
         else
           Column(
@@ -304,9 +297,12 @@ class _ExpensesTab extends ConsumerWidget {
                                 amountCents: balance.amountCents,
                                 currencyCode: contextValue.currencyCode,
                               ),
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppColors.textSecondaryFor(brightness),
-                              ),
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors.textSecondaryFor(
+                                      brightness,
+                                    ),
+                                  ),
                             ),
                           ],
                         ),
@@ -316,9 +312,9 @@ class _ExpensesTab extends ConsumerWidget {
                         expanded: false,
                         onPressed: contextValue.canEdit
                             ? () => showBalanceSettlementSheet(
-                                  context,
-                                  balance: balance,
-                                )
+                                context,
+                                balance: balance,
+                              )
                             : null,
                       ),
                     ],
@@ -343,70 +339,74 @@ class _ExpensesTab extends ConsumerWidget {
             title: 'No expenses yet',
             body: 'Shared purchases and reimbursements will appear here.',
             ctaLabel: contextValue.canEdit ? 'Add Expense' : null,
-            onCtaPressed: contextValue.canEdit ? () => showAddExpenseSheet(context) : null,
+            onCtaPressed: contextValue.canEdit
+                ? () => showAddExpenseSheet(context)
+                : null,
           )
         else
           Column(
-            children: List<Widget>.generate(
-              dashboard.recentExpenses.length,
-              (int index) {
-                final expense = dashboard.recentExpenses[index];
-                final canDelete = expense.createdByUserId == contextValue.currentUserId;
-                return HearthListItemEntry(
-                  index: index,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.md),
-                    child: HearthSwipeToAction(
-                      trailingAction: canDelete
-                          ? HearthSwipeAction(
-                              icon: HugeIcons.strokeRoundedDelete02,
-                              label: 'Delete',
-                              color: AppColors.errorFor(brightness),
-                              onTriggered: () {
-                                ref
-                                    .read(financeNotifierProvider.notifier)
-                                    .deleteExpense(expense.id);
-                              },
-                            )
-                          : null,
-                      child: HearthCard(
-                        onTap: () => context.push('${FinanceModule.routePath}/expense/${expense.id}'),
-                        child: Row(
-                          children: <Widget>[
-                            const Icon(HugeIcons.strokeRoundedWallet03),
-                            const SizedBox(width: AppSpacing.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    expense.title,
-                                    style: Theme.of(context).textTheme.titleLarge,
-                                  ),
-                                  const SizedBox(height: AppSpacing.xs),
-                                  Text(
-                                    '${expense.category.label} • ${AppFormatters.shortDate(expense.expenseDate)}',
-                                    style: Theme.of(context).textTheme.bodySmall,
-                                  ),
-                                ],
-                              ),
+            children: List<Widget>.generate(dashboard.recentExpenses.length, (
+              int index,
+            ) {
+              final expense = dashboard.recentExpenses[index];
+              final canDelete =
+                  expense.createdByUserId == contextValue.currentUserId;
+              return HearthListItemEntry(
+                index: index,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                  child: HearthSwipeToAction(
+                    trailingAction: canDelete
+                        ? HearthSwipeAction(
+                            icon: HugeIcons.strokeRoundedDelete02,
+                            label: 'Delete',
+                            color: AppColors.errorFor(brightness),
+                            onTriggered: () {
+                              ref
+                                  .read(financeNotifierProvider.notifier)
+                                  .deleteExpense(expense.id);
+                            },
+                          )
+                        : null,
+                    child: HearthCard(
+                      onTap: () => context.push(
+                        '${FinanceModule.routePath}/expense/${expense.id}',
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          const Icon(HugeIcons.strokeRoundedWallet03),
+                          const SizedBox(width: AppSpacing.md),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  expense.title,
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                                const SizedBox(height: AppSpacing.xs),
+                                Text(
+                                  '${expense.category.label} • ${AppFormatters.shortDate(expense.expenseDate)}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: AppSpacing.md),
-                            Text(
-                              AppFormatters.currencyFromCents(
-                                amountCents: expense.amountCents,
-                                currencyCode: contextValue.currencyCode,
-                              ),
-                              style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(width: AppSpacing.md),
+                          Text(
+                            AppFormatters.currencyFromCents(
+                              amountCents: expense.amountCents,
+                              currencyCode: contextValue.currencyCode,
                             ),
-                          ],
-                        ),
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            }),
           ),
       ],
     );
@@ -414,9 +414,7 @@ class _ExpensesTab extends ConsumerWidget {
 }
 
 class _BillsTab extends ConsumerWidget {
-  const _BillsTab({
-    required this.contextValue,
-  });
+  const _BillsTab({required this.contextValue});
 
   final FinanceContext contextValue;
 
@@ -431,13 +429,11 @@ class _BillsTab extends ConsumerWidget {
           children: <Widget>[
             HearthSectionHeader(
               title: 'Recurring bills',
-              subtitle: 'Templates generate due instances whenever the app boots.',
+              subtitle:
+                  'Templates generate due instances whenever the app boots.',
               actionLabel: contextValue.canEdit ? 'Add bill' : null,
               onActionPressed: contextValue.canEdit
-                  ? () => showAddExpenseSheet(
-                        context,
-                        startAsRecurring: true,
-                      )
+                  ? () => showAddExpenseSheet(context, startAsRecurring: true)
                   : null,
             ),
             const SizedBox(height: AppSpacing.sm),
@@ -448,10 +444,7 @@ class _BillsTab extends ConsumerWidget {
                 body: 'Create rent, utilities, or subscription templates here.',
                 ctaLabel: contextValue.canEdit ? 'Add Bill' : null,
                 onCtaPressed: contextValue.canEdit
-                    ? () => showAddExpenseSheet(
-                          context,
-                          startAsRecurring: true,
-                        )
+                    ? () => showAddExpenseSheet(context, startAsRecurring: true)
                     : null,
               )
             else
@@ -460,22 +453,25 @@ class _BillsTab extends ConsumerWidget {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.md),
                     child: HearthSwipeToAction(
-                      trailingAction: bill.createdByUserId == contextValue.currentUserId
+                      trailingAction:
+                          bill.createdByUserId == contextValue.currentUserId
                           ? HearthSwipeAction(
                               icon: HugeIcons.strokeRoundedDelete02,
                               label: 'Delete',
                               color: AppColors.errorFor(brightness),
                               onTriggered: () {
-                                ref.read(financeNotifierProvider.notifier).deleteExpense(bill.id);
+                                ref
+                                    .read(financeNotifierProvider.notifier)
+                                    .deleteExpense(bill.id);
                               },
                             )
                           : null,
                       child: HearthCard(
                         onTap: contextValue.canEdit
                             ? () => showAddExpenseSheet(
-                                  context,
-                                  initialExpense: bill,
-                                )
+                                context,
+                                initialExpense: bill,
+                              )
                             : null,
                         child: Row(
                           children: <Widget>[
@@ -487,14 +483,18 @@ class _BillsTab extends ConsumerWidget {
                                 children: <Widget>[
                                   Text(
                                     bill.title,
-                                    style: Theme.of(context).textTheme.titleLarge,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleLarge,
                                   ),
                                   const SizedBox(height: AppSpacing.xs),
                                   Text(
                                     bill.nextDueAt == null
                                         ? 'No next due date'
                                         : 'Next due ${AppFormatters.shortDate(bill.nextDueAt!)}',
-                                    style: Theme.of(context).textTheme.bodySmall,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodySmall,
                                   ),
                                 ],
                               ),
@@ -524,9 +524,7 @@ class _BillsTab extends ConsumerWidget {
 }
 
 class _BudgetTab extends ConsumerWidget {
-  const _BudgetTab({
-    required this.contextValue,
-  });
+  const _BudgetTab({required this.contextValue});
 
   final FinanceContext contextValue;
 
@@ -568,14 +566,18 @@ class _BudgetTab extends ConsumerWidget {
                           ),
                           if (contextValue.canManageBudgets)
                             HearthButton(
-                              label: progress.limitCents == null ? 'Set' : 'Edit',
+                              label: progress.limitCents == null
+                                  ? 'Set'
+                                  : 'Edit',
                               expanded: false,
                               variant: HearthButtonVariant.ghost,
                               onPressed: () {
                                 showHearthBottomSheet<void>(
                                   context: context,
                                   builder: (BuildContext context) {
-                                    return BudgetEditorSheet(progress: progress);
+                                    return BudgetEditorSheet(
+                                      progress: progress,
+                                    );
                                   },
                                 );
                               },

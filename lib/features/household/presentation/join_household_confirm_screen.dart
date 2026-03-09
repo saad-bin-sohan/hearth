@@ -56,7 +56,10 @@ class _JoinHouseholdConfirmScreenState
                     HearthCard(
                       child: Row(
                         children: <Widget>[
-                          HearthAvatar(displayName: preview.household.name, size: 56),
+                          HearthAvatar(
+                            displayName: preview.household.name,
+                            size: 56,
+                          ),
                           const SizedBox(width: AppSpacing.md),
                           Expanded(
                             child: Column(
@@ -85,7 +88,9 @@ class _JoinHouseholdConfirmScreenState
                             .read(householdNotifierProvider.notifier)
                             .joinHousehold(widget.inviteCode);
                         _showCelebration.value = true;
-                        await Future<void>.delayed(const Duration(milliseconds: 700));
+                        await Future<void>.delayed(
+                          const Duration(milliseconds: 700),
+                        );
                         if (context.mounted) {
                           context.go(HomeScreen.routePath);
                         }

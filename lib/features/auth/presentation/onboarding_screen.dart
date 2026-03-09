@@ -96,9 +96,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                 width: 112,
                                 height: 112,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primaryContainerFor(brightness),
-                                  borderRadius:
-                                      BorderRadius.circular(AppRadius.radiusXl),
+                                  color: AppColors.primaryContainerFor(
+                                    brightness,
+                                  ),
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.radiusXl,
+                                  ),
                                 ),
                                 child: Icon(
                                   step.icon,
@@ -110,15 +113,20 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               Text(
                                 step.title,
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.headlineMedium,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineMedium,
                               ),
                               const SizedBox(height: AppSpacing.md),
                               Text(
                                 step.body,
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: AppColors.textSecondaryFor(brightness),
-                                ),
+                                style: Theme.of(context).textTheme.bodyLarge
+                                    ?.copyWith(
+                                      color: AppColors.textSecondaryFor(
+                                        brightness,
+                                      ),
+                                    ),
                               ),
                             ],
                           ),
@@ -137,7 +145,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     curve: AppAnimations.easeInOut,
                     width: selected ? 28 : 10,
                     height: 10,
-                    margin: const EdgeInsets.symmetric(horizontal: AppSpacing.xs),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.xs,
+                    ),
                     decoration: BoxDecoration(
                       color: selected
                           ? AppColors.primaryFor(brightness)

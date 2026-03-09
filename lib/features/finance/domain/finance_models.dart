@@ -19,19 +19,19 @@ enum FinanceCategory {
 
 extension FinanceCategoryX on FinanceCategory {
   String get label => switch (this) {
-        FinanceCategory.housing => 'Housing',
-        FinanceCategory.utilities => 'Utilities',
-        FinanceCategory.groceries => 'Groceries',
-        FinanceCategory.dining => 'Dining',
-        FinanceCategory.transportation => 'Transportation',
-        FinanceCategory.subscriptions => 'Subscriptions',
-        FinanceCategory.maintenance => 'Maintenance',
-        FinanceCategory.cleaning => 'Cleaning',
-        FinanceCategory.family => 'Family',
-        FinanceCategory.pets => 'Pets',
-        FinanceCategory.healthcare => 'Healthcare',
-        FinanceCategory.other => 'Other',
-      };
+    FinanceCategory.housing => 'Housing',
+    FinanceCategory.utilities => 'Utilities',
+    FinanceCategory.groceries => 'Groceries',
+    FinanceCategory.dining => 'Dining',
+    FinanceCategory.transportation => 'Transportation',
+    FinanceCategory.subscriptions => 'Subscriptions',
+    FinanceCategory.maintenance => 'Maintenance',
+    FinanceCategory.cleaning => 'Cleaning',
+    FinanceCategory.family => 'Family',
+    FinanceCategory.pets => 'Pets',
+    FinanceCategory.healthcare => 'Healthcare',
+    FinanceCategory.other => 'Other',
+  };
 
   static FinanceCategory fromName(String value) {
     return FinanceCategory.values.firstWhere(
@@ -44,10 +44,10 @@ enum FinanceMemberRole { admin, member, observer }
 
 extension FinanceMemberRoleX on FinanceMemberRole {
   String get label => switch (this) {
-        FinanceMemberRole.admin => 'Admin',
-        FinanceMemberRole.member => 'Member',
-        FinanceMemberRole.observer => 'Observer',
-      };
+    FinanceMemberRole.admin => 'Admin',
+    FinanceMemberRole.member => 'Member',
+    FinanceMemberRole.observer => 'Observer',
+  };
 
   static FinanceMemberRole fromName(String value) {
     return FinanceMemberRole.values.firstWhere(
@@ -102,19 +102,16 @@ class FinanceContext extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        householdId,
-        currencyCode,
-        currentUserId,
-        currentUserRole,
-        participants,
-      ];
+    householdId,
+    currencyCode,
+    currentUserId,
+    currentUserRole,
+    participants,
+  ];
 }
 
 class SplitAllocation extends Equatable {
-  const SplitAllocation({
-    required this.userId,
-    required this.amountCents,
-  });
+  const SplitAllocation({required this.userId, required this.amountCents});
 
   final String userId;
   final int amountCents;
@@ -124,10 +121,7 @@ class SplitAllocation extends Equatable {
 }
 
 abstract class SplitRule extends Equatable {
-  const SplitRule({
-    required this.type,
-    required this.participantUserIds,
-  });
+  const SplitRule({required this.type, required this.participantUserIds});
 
   final SplitRuleType type;
   final List<String> participantUserIds;
@@ -144,39 +138,50 @@ abstract class SplitRule extends Equatable {
     final type = SplitRuleType.values.firstWhere(
       (SplitRuleType option) => option.name == decoded['type'],
     );
-    final participants = (decoded['participantUserIds'] as List<dynamic>? ?? const <dynamic>[])
-        .map((dynamic value) => value as String)
-        .toList();
+    final participants =
+        (decoded['participantUserIds'] as List<dynamic>? ?? const <dynamic>[])
+            .map((dynamic value) => value as String)
+            .toList();
     switch (type) {
       case SplitRuleType.equal:
         return EqualSplitRule(participantUserIds: participants);
       case SplitRuleType.percentage:
         return PercentageSplitRule(
           participantUserIds: participants,
-          percentages: (decoded['percentages'] as Map<String, dynamic>? ?? const <String, dynamic>{})
-              .map((String key, dynamic value) => MapEntry<String, int>(key, value as int)),
+          percentages:
+              (decoded['percentages'] as Map<String, dynamic>? ??
+                      const <String, dynamic>{})
+                  .map(
+                    (String key, dynamic value) =>
+                        MapEntry<String, int>(key, value as int),
+                  ),
         );
       case SplitRuleType.fixed:
         return FixedSplitRule(
           participantUserIds: participants,
-          amountsCents: (decoded['amountsCents'] as Map<String, dynamic>? ?? const <String, dynamic>{})
-              .map((String key, dynamic value) => MapEntry<String, int>(key, value as int)),
+          amountsCents:
+              (decoded['amountsCents'] as Map<String, dynamic>? ??
+                      const <String, dynamic>{})
+                  .map(
+                    (String key, dynamic value) =>
+                        MapEntry<String, int>(key, value as int),
+                  ),
         );
       case SplitRuleType.exemption:
         return ExemptionSplitRule(
           participantUserIds: participants,
-          exemptUserIds: (decoded['exemptUserIds'] as List<dynamic>? ?? const <dynamic>[])
-              .map((dynamic value) => value as String)
-              .toList(),
+          exemptUserIds:
+              (decoded['exemptUserIds'] as List<dynamic>? ?? const <dynamic>[])
+                  .map((dynamic value) => value as String)
+                  .toList(),
         );
     }
   }
 }
 
 class EqualSplitRule extends SplitRule {
-  const EqualSplitRule({
-    required super.participantUserIds,
-  }) : super(type: SplitRuleType.equal);
+  const EqualSplitRule({required super.participantUserIds})
+    : super(type: SplitRuleType.equal);
 
   @override
   Map<String, Object?> toMap() {
@@ -254,10 +259,7 @@ class ExemptionSplitRule extends SplitRule {
 }
 
 class RecurrenceRule extends Equatable {
-  const RecurrenceRule({
-    required this.frequency,
-    required this.anchorDate,
-  });
+  const RecurrenceRule({required this.frequency, required this.anchorDate});
 
   final RecurrenceFrequency frequency;
   final DateTime anchorDate;
@@ -356,24 +358,24 @@ class ExpenseDraft extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        householdId,
-        title,
-        amountCents,
-        category,
-        paidByUserId,
-        expenseDate,
-        splitRule,
-        isRecurring,
-        isRecurringTemplate,
-        recurrenceRule,
-        receiptReference,
-        notes,
-        sourceRecurringExpenseId,
-        nextDueAt,
-        lastGeneratedAt,
-        isSettled,
-      ];
+    id,
+    householdId,
+    title,
+    amountCents,
+    category,
+    paidByUserId,
+    expenseDate,
+    splitRule,
+    isRecurring,
+    isRecurringTemplate,
+    recurrenceRule,
+    receiptReference,
+    notes,
+    sourceRecurringExpenseId,
+    nextDueAt,
+    lastGeneratedAt,
+    isSettled,
+  ];
 }
 
 class ExpenseEntity extends Equatable {
@@ -450,28 +452,28 @@ class ExpenseEntity extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        householdId,
-        title,
-        amountCents,
-        category,
-        paidByUserId,
-        expenseDate,
-        splitRule,
-        isRecurring,
-        isRecurringTemplate,
-        recurrenceRule,
-        receiptReference,
-        notes,
-        createdByUserId,
-        createdAt,
-        updatedAt,
-        isSettled,
-        sourceRecurringExpenseId,
-        nextDueAt,
-        lastGeneratedAt,
-        paidByDisplayName,
-      ];
+    id,
+    householdId,
+    title,
+    amountCents,
+    category,
+    paidByUserId,
+    expenseDate,
+    splitRule,
+    isRecurring,
+    isRecurringTemplate,
+    recurrenceRule,
+    receiptReference,
+    notes,
+    createdByUserId,
+    createdAt,
+    updatedAt,
+    isSettled,
+    sourceRecurringExpenseId,
+    nextDueAt,
+    lastGeneratedAt,
+    paidByDisplayName,
+  ];
 }
 
 class BalanceEntity extends Equatable {
@@ -497,15 +499,15 @@ class BalanceEntity extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        householdId,
-        debtorUserId,
-        creditorUserId,
-        amountCents,
-        lastUpdatedAt,
-        debtorDisplayName,
-        creditorDisplayName,
-      ];
+    id,
+    householdId,
+    debtorUserId,
+    creditorUserId,
+    amountCents,
+    lastUpdatedAt,
+    debtorDisplayName,
+    creditorDisplayName,
+  ];
 }
 
 class BalanceSummary extends Equatable {
@@ -542,13 +544,13 @@ class CategoryBudgetEntity extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        householdId,
-        category,
-        limitCents,
-        createdByUserId,
-        updatedAt,
-      ];
+    id,
+    householdId,
+    category,
+    limitCents,
+    createdByUserId,
+    updatedAt,
+  ];
 }
 
 class BudgetProgress extends Equatable {
@@ -611,21 +613,21 @@ class SettlementEntity extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        householdId,
-        debtorUserId,
-        creditorUserId,
-        amountCents,
-        status,
-        initiatedByUserId,
-        confirmedByUserId,
-        createdAt,
-        completedAt,
-        cancelledAt,
-        sourceExpenseId,
-        debtorDisplayName,
-        creditorDisplayName,
-      ];
+    id,
+    householdId,
+    debtorUserId,
+    creditorUserId,
+    amountCents,
+    status,
+    initiatedByUserId,
+    confirmedByUserId,
+    createdAt,
+    completedAt,
+    cancelledAt,
+    sourceExpenseId,
+    debtorDisplayName,
+    creditorDisplayName,
+  ];
 }
 
 enum FinanceActivityType { expense, settlement }
@@ -651,14 +653,14 @@ class FinanceActivityItem extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        id,
-        type,
-        title,
-        subtitle,
-        amountCents,
-        occurredAt,
-        expenseId,
-      ];
+    id,
+    type,
+    title,
+    subtitle,
+    amountCents,
+    occurredAt,
+    expenseId,
+  ];
 }
 
 class FinanceHomeSummary extends Equatable {
@@ -689,9 +691,9 @@ class FinanceDashboardData extends Equatable {
 
   @override
   List<Object?> get props => <Object?>[
-        summary,
-        balances,
-        recentExpenses,
-        pendingSettlements,
-      ];
+    summary,
+    balances,
+    recentExpenses,
+    pendingSettlements,
+  ];
 }

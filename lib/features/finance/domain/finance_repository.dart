@@ -32,18 +32,14 @@ abstract class FinanceRepository {
 
   Future<ExpenseEntity?> getExpenseById(String expenseId);
 
-  Future<List<BalanceEntity>> getBalances({
-    required String householdId,
-  });
+  Future<List<BalanceEntity>> getBalances({required String householdId});
 
   Future<BalanceSummary> getBalanceSummary({
     required String householdId,
     required String userId,
   });
 
-  Future<List<BudgetProgress>> getBudgetProgress({
-    required String householdId,
-  });
+  Future<List<BudgetProgress>> getBudgetProgress({required String householdId});
 
   Future<List<SettlementEntity>> getSettlementsForPair({
     required String householdId,

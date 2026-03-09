@@ -9,6 +9,7 @@ import 'package:hearth/core/widgets/animated/hearth_list_item_entry.dart';
 import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/core/widgets/hearth_empty_state.dart';
 import 'package:hearth/core/widgets/hearth_section_header.dart';
+import 'package:hearth/features/chores/presentation/widgets/chores_summary_card.dart';
 import 'package:hearth/features/finance/domain/finance_models.dart';
 import 'package:hearth/features/finance/presentation/expense_detail_screen.dart';
 import 'package:hearth/features/finance/presentation/finance_notifier.dart';
@@ -114,6 +115,8 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
+                const ChoresSummaryCard(),
+                const SizedBox(width: AppSpacing.md),
                 const SummaryCard(
                   title: 'Document Vault',
                   metric: '0',
@@ -155,8 +158,8 @@ class HomeScreen extends ConsumerWidget {
                         onTap: item.expenseId == null
                             ? null
                             : () => context.push(
-                                  '${ExpenseDetailScreen.routePath}/${item.expenseId}',
-                                ),
+                                '${ExpenseDetailScreen.routePath}/${item.expenseId}',
+                              ),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -175,21 +178,29 @@ class HomeScreen extends ConsumerWidget {
                                 children: <Widget>[
                                   Text(
                                     item.title,
-                                    style: Theme.of(context).textTheme.titleLarge,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleLarge,
                                   ),
                                   const SizedBox(height: AppSpacing.xs),
                                   Text(
                                     item.subtitle,
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.textSecondaryFor(brightness),
-                                    ),
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: AppColors.textSecondaryFor(
+                                            brightness,
+                                          ),
+                                        ),
                                   ),
                                   const SizedBox(height: AppSpacing.sm),
                                   Text(
                                     AppFormatters.shortDate(item.occurredAt),
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.textTertiaryFor(brightness),
-                                    ),
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(
+                                          color: AppColors.textTertiaryFor(
+                                            brightness,
+                                          ),
+                                        ),
                                   ),
                                 ],
                               ),
@@ -198,7 +209,9 @@ class HomeScreen extends ConsumerWidget {
                             Text(
                               AppFormatters.currencyFromCents(
                                 amountCents: item.amountCents,
-                                currencyCode: householdAsync.valueOrNull?.currencyCode ?? 'USD',
+                                currencyCode:
+                                    householdAsync.valueOrNull?.currencyCode ??
+                                    'USD',
                               ),
                               style: Theme.of(context).textTheme.titleLarge,
                             ),

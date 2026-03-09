@@ -25,7 +25,10 @@ class EmojiPickerSheet extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text('Choose an emoji', style: Theme.of(context).textTheme.headlineSmall),
+        Text(
+          'Choose an emoji',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
         const SizedBox(height: AppSpacing.lg),
         Wrap(
           spacing: AppSpacing.sm,

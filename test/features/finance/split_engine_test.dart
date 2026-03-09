@@ -23,11 +23,7 @@ void main() {
       totalCents: 1001,
       rule: const PercentageSplitRule(
         participantUserIds: participants,
-        percentages: <String, int>{
-          'alice': 50,
-          'bob': 30,
-          'charlie': 20,
-        },
+        percentages: <String, int>{'alice': 50, 'bob': 30, 'charlie': 20},
       ),
     );
 
@@ -43,11 +39,7 @@ void main() {
         totalCents: 1000,
         rule: const PercentageSplitRule(
           participantUserIds: participants,
-          percentages: <String, int>{
-            'alice': 40,
-            'bob': 30,
-            'charlie': 20,
-          },
+          percentages: <String, int>{'alice': 40, 'bob': 30, 'charlie': 20},
         ),
       ),
       throwsStateError,
@@ -60,29 +52,28 @@ void main() {
         totalCents: 1000,
         rule: const FixedSplitRule(
           participantUserIds: participants,
-          amountsCents: <String, int>{
-            'alice': 300,
-            'bob': 300,
-            'charlie': 300,
-          },
+          amountsCents: <String, int>{'alice': 300, 'bob': 300, 'charlie': 300},
         ),
       ),
       throwsStateError,
     );
   });
 
-  test('exemption split gives exempt members zero and shares remaining equally', () {
-    final result = engine.allocate(
-      totalCents: 1000,
-      rule: const ExemptionSplitRule(
-        participantUserIds: participants,
-        exemptUserIds: <String>['bob'],
-      ),
-    );
+  test(
+    'exemption split gives exempt members zero and shares remaining equally',
+    () {
+      final result = engine.allocate(
+        totalCents: 1000,
+        rule: const ExemptionSplitRule(
+          participantUserIds: participants,
+          exemptUserIds: <String>['bob'],
+        ),
+      );
 
-    expect(
-      result.map((SplitAllocation entry) => entry.amountCents).toList(),
-      <int>[500, 0, 500],
-    );
-  });
+      expect(
+        result.map((SplitAllocation entry) => entry.amountCents).toList(),
+        <int>[500, 0, 500],
+      );
+    },
+  );
 }

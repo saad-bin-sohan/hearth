@@ -1,9 +1,6 @@
 abstract class SessionRepository {
   Future<SessionSnapshot> load();
-  Future<void> saveSession({
-    required String authToken,
-    required String userId,
-  });
+  Future<void> saveSession({required String authToken, required String userId});
   Future<void> clearSession();
   Future<void> setOnboardingComplete(bool completed);
   Future<void> setActiveHouseholdId(String? householdId);

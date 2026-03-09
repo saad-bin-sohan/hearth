@@ -35,7 +35,8 @@ class InviteScreen extends ConsumerWidget {
             children: <Widget>[
               const HearthSectionHeader(
                 title: 'Bring your household in',
-                subtitle: 'Share the code or show the QR placeholder to add members quickly.',
+                subtitle:
+                    'Share the code or show the QR placeholder to add members quickly.',
               ),
               HearthCard(
                 child: Column(
@@ -72,7 +73,10 @@ class InviteScreen extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Current members', style: Theme.of(context).textTheme.titleLarge),
+                          Text(
+                            'Current members',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
                           const SizedBox(height: AppSpacing.xs),
                           membersAsync.when(
                             data: (members) => HearthNumberTicker(

@@ -11,7 +11,8 @@ class Expenses extends Table {
   DateTimeColumn get expenseDate => dateTime()();
   TextColumn get splitRuleJson => text()();
   BoolColumn get isRecurring => boolean().withDefault(const Constant(false))();
-  BoolColumn get isRecurringTemplate => boolean().withDefault(const Constant(false))();
+  BoolColumn get isRecurringTemplate =>
+      boolean().withDefault(const Constant(false))();
   TextColumn get recurrenceRuleJson => text().nullable()();
   TextColumn get receiptReference => text().nullable()();
   TextColumn get notes => text().nullable()();
@@ -69,7 +70,8 @@ class Settlements extends Table {
   Set<Column<Object>>? get primaryKey => <Column<Object>>{id};
 }
 
-List<TableInfo<Table, Object?>> financeTables(AppDatabase db) => <TableInfo<Table, Object?>>[
+List<TableInfo<Table, Object?>> financeTables(AppDatabase db) =>
+    <TableInfo<Table, Object?>>[
       db.expenses,
       db.balances,
       db.categoryBudgets,

@@ -35,7 +35,9 @@ class BalanceSettlementSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final pendingAsync = ref.watch(financePendingSettlementForBalanceProvider(balance));
+    final pendingAsync = ref.watch(
+      financePendingSettlementForBalanceProvider(balance),
+    );
     final financeContext = ref.watch(financeContextProvider);
     final financeState = ref.watch(financeNotifierProvider);
     return Padding(
@@ -53,10 +55,10 @@ class BalanceSettlementSheet extends ConsumerWidget {
           return pendingAsync.when(
             data: (SettlementEntity? pending) {
               final currentUserId = contextValue.currentUserId;
-              final isAwaitingCounterparty = pending != null &&
-                  pending.initiatedByUserId == currentUserId;
-              final isCounterparty = pending != null &&
-                  pending.initiatedByUserId != currentUserId;
+              final isAwaitingCounterparty =
+                  pending != null && pending.initiatedByUserId == currentUserId;
+              final isCounterparty =
+                  pending != null && pending.initiatedByUserId != currentUserId;
               return Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,7 +103,9 @@ class BalanceSettlementSheet extends ConsumerWidget {
                       isLoading: financeState.isLoading,
                       onPressed: contextValue.canEdit
                           ? () async {
-                              await ref.read(financeNotifierProvider.notifier).requestSettlement(
+                              await ref
+                                  .read(financeNotifierProvider.notifier)
+                                  .requestSettlement(
                                     debtorUserId: balance.debtorUserId,
                                     creditorUserId: balance.creditorUserId,
                                     amountCents: balance.amountCents,
@@ -115,7 +119,9 @@ class BalanceSettlementSheet extends ConsumerWidget {
                     )
                   else ...<Widget>[
                     HearthButton(
-                      label: isCounterparty ? 'Confirm Settlement' : 'Pending Confirmation',
+                      label: isCounterparty
+                          ? 'Confirm Settlement'
+                          : 'Pending Confirmation',
                       isLoading: financeState.isLoading,
                       onPressed: isCounterparty
                           ? () async {

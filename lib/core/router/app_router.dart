@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hearth/features/auth/presentation/routes.dart';
+import 'package:hearth/features/chores/presentation/routes.dart';
 import 'package:hearth/features/finance/presentation/routes.dart';
 import 'package:hearth/features/home/presentation/home_screen.dart';
 import 'package:hearth/features/home/presentation/settings_screen.dart';
@@ -32,9 +33,8 @@ final appRouterProvider = Provider<GoRouter>((Ref ref) {
               ),
             ],
           ),
-          StatefulShellBranch(
-            routes: financeRoutes,
-          ),
+          StatefulShellBranch(routes: financeRoutes),
+          StatefulShellBranch(routes: choresRoutes),
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(

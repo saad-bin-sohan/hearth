@@ -4,11 +4,7 @@ import 'package:hearth/core/theme/app_text_styles.dart';
 import 'package:hearth/core/utils/extensions.dart';
 
 class HearthAvatar extends StatelessWidget {
-  const HearthAvatar({
-    required this.displayName,
-    this.size = 40,
-    super.key,
-  });
+  const HearthAvatar({required this.displayName, this.size = 40, super.key});
 
   final String displayName;
   final double size;
@@ -31,10 +27,7 @@ class HearthAvatar extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        color: bgColor,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
       alignment: Alignment.center,
       child: Text(
         displayName.initials,

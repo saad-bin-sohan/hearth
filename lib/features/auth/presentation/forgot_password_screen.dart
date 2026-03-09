@@ -15,7 +15,8 @@ class ForgotPasswordScreen extends ConsumerStatefulWidget {
   static const String routePath = '/auth/forgot-password';
 
   @override
-  ConsumerState<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
+  ConsumerState<ForgotPasswordScreen> createState() =>
+      _ForgotPasswordScreenState();
 }
 
 class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
@@ -33,7 +34,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final authState = ref.watch(authNotifierProvider);
     return AuthScaffold(
       title: 'Reset your password',
-      subtitle: 'We verify the local account and let you set a new password right away.',
+      subtitle:
+          'We verify the local account and let you set a new password right away.',
       child: Form(
         key: _formKey,
         child: Column(
@@ -60,8 +62,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   return;
                 }
                 if (state.status != AuthStatus.error) {
-                  final encoded = Uri.encodeComponent(_emailController.text.trim());
-                  context.push('${ResetPasswordScreen.routePath}?email=$encoded');
+                  final encoded = Uri.encodeComponent(
+                    _emailController.text.trim(),
+                  );
+                  context.push(
+                    '${ResetPasswordScreen.routePath}?email=$encoded',
+                  );
                 }
               },
             ),
