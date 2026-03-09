@@ -10,9 +10,11 @@ import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/features/auth/data/local_auth_repository.dart';
 import 'package:hearth/features/auth/data/password_hasher.dart';
 import 'package:hearth/features/auth/presentation/sign_up_screen.dart';
+import 'package:hearth/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:hearth/features/household/data/local_household_repository.dart';
 import 'package:hearth/features/household/presentation/create_household_screen.dart';
 import 'package:hearth/features/household/presentation/invite_screen.dart';
+import 'package:hearth/features/maintenance/presentation/screens/maintenance_dashboard_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -105,14 +107,33 @@ void main() {
       expect(find.text('Finance'), findsOneWidget);
       expect(find.text('Documents'), findsWidgets);
       expect(find.text('Grocery'), findsWidgets);
+      expect(find.text('Maintenance'), findsWidgets);
       expect(find.text('documents saved'), findsOneWidget);
       expect(find.text('Members'), findsNothing);
+
+      await tester.tap(find.byIcon(Icons.calendar_today).evaluate().isEmpty
+          ? find.byType(IconButton).first
+          : find.byIcon(Icons.calendar_today));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byType(CalendarScreen), findsOneWidget);
+
+      GoRouter.of(tester.element(find.byType(CalendarScreen))).go('/home');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
 
       await tester.tap(find.text('Grocery').last);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 500));
 
       expect(find.text('Shopping List'), findsOneWidget);
+
+      await tester.tap(find.text('Maintenance').last);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.byType(MaintenanceDashboardScreen), findsOneWidget);
 
       await tester.tap(find.text('More').last);
       await tester.pump();
@@ -121,6 +142,7 @@ void main() {
       expect(find.text('Members'), findsOneWidget);
       expect(find.text('Join a household'), findsOneWidget);
       expect(find.text('Settings'), findsOneWidget);
+      expect(find.text('Maintenance Ledger'), findsNothing);
 
       final settingsCard = find.widgetWithText(HearthCard, 'Settings');
       await tester.ensureVisible(settingsCard);

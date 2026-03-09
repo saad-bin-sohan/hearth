@@ -15,6 +15,7 @@ import 'package:hearth/core/widgets/hearth_chip.dart';
 import 'package:hearth/core/widgets/hearth_text_field.dart';
 import 'package:hearth/features/documents/domain/document_models.dart';
 import 'package:hearth/features/documents/presentation/document_notifier.dart';
+import 'package:hearth/features/documents/presentation/providers/document_asset_providers.dart';
 import 'package:hearth/features/documents/presentation/screens/camera_scan_screen.dart';
 import 'package:hearth/features/documents/presentation/widgets/document_expiry_badge_extensions.dart';
 import 'package:hearth/features/household/presentation/household_notifier.dart';
@@ -27,6 +28,8 @@ Future<void> showAddDocumentSheet(
   BuildContext context, {
   String? documentId,
   DocumentEntity? initialDocument,
+  String? preselectedAssetId,
+  String? preselectedAssetLabel,
 }) {
   return showHearthBottomSheet<void>(
     context: context,
@@ -36,16 +39,26 @@ Future<void> showAddDocumentSheet(
       return AddDocumentSheet(
         documentId: documentId,
         initialDocument: initialDocument,
+        preselectedAssetId: preselectedAssetId,
+        preselectedAssetLabel: preselectedAssetLabel,
       );
     },
   );
 }
 
 class AddDocumentSheet extends ConsumerStatefulWidget {
-  const AddDocumentSheet({this.documentId, this.initialDocument, super.key});
+  const AddDocumentSheet({
+    this.documentId,
+    this.initialDocument,
+    this.preselectedAssetId,
+    this.preselectedAssetLabel,
+    super.key,
+  });
 
   final String? documentId;
   final DocumentEntity? initialDocument;
+  final String? preselectedAssetId;
+  final String? preselectedAssetLabel;
 
   @override
   ConsumerState<AddDocumentSheet> createState() => _AddDocumentSheetState();
@@ -54,9 +67,7 @@ class AddDocumentSheet extends ConsumerStatefulWidget {
 class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _issuerController = TextEditingController();
-  final TextEditingController _assetController = TextEditingController(
-    text: 'Available in a future update',
-  );
+  final TextEditingController _assetController = TextEditingController();
 
   final ImagePicker _imagePicker = ImagePicker();
 
@@ -67,6 +78,8 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
   DateTime? _documentDate;
   DateTime? _expiryDate;
   String? _sourcePath;
+  String? _selectedAssetId;
+  String? _selectedAssetLabel;
   bool _processingSource = false;
   bool _initialized = false;
 
@@ -96,7 +109,9 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
           if (household == null || currentUserId == null) {
             return const SizedBox.shrink();
           }
+          final assetsAsync = ref.watch(assetPickerProvider(household.id));
           _initialize(initialDocument);
+          _syncSelectedAssetLabel(assetsAsync.valueOrNull);
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -128,6 +143,7 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
                   householdId: household.id,
                   currentUserId: currentUserId,
                   foldersAsync: foldersAsync,
+                  assetsAsync: assetsAsync,
                 ),
             ],
           );
@@ -178,6 +194,7 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
     required String householdId,
     required String currentUserId,
     required AsyncValue<List<VaultFolderEntity>> foldersAsync,
+    required AsyncValue<List<DocumentAssetOption>> assetsAsync,
   }) {
     final brightness = Theme.of(context).brightness;
     final previewDocument = initialDocument;
@@ -393,16 +410,55 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
           label: 'Link to Asset',
           controller: _assetController,
           readOnly: true,
-          suffix: Icon(
-            HugeIcons.strokeRoundedLock,
-            color: AppColors.textTertiaryFor(brightness),
+          onTap: () => _openAssetPicker(
+            householdId: householdId,
+            options: assetsAsync.valueOrNull ?? const <DocumentAssetOption>[],
+          ),
+          hintText: 'Select an asset',
+          suffix: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              if (_selectedAssetId != null)
+                IconButton(
+                  onPressed: _clearSelectedAsset,
+                  icon: Icon(
+                    HugeIcons.strokeRoundedCancel01,
+                    color: AppColors.textTertiaryFor(brightness),
+                  ),
+                ),
+              Icon(
+                HugeIcons.strokeRoundedArrowRight01,
+                color: AppColors.textTertiaryFor(brightness),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: AppSpacing.xs),
-        Text(
-          'You will be able to link documents to appliances and assets in a coming update.',
-          style: AppTextStyles.bodySmall.copyWith(
-            color: AppColors.textSecondaryFor(brightness),
+        assetsAsync.when(
+          data: (List<DocumentAssetOption> assets) {
+            final helperText = assets.isEmpty
+                ? 'No assets added yet — add one in Maintenance.'
+                : _selectedAssetId == null
+                ? 'Tap to link this document to a household asset.'
+                : 'This document will be linked to $_selectedAssetLabel.';
+            return Text(
+              helperText,
+              style: AppTextStyles.bodySmall.copyWith(
+                color: AppColors.textSecondaryFor(brightness),
+              ),
+            );
+          },
+          loading: () => Text(
+            'Loading household assets...',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.textSecondaryFor(brightness),
+            ),
+          ),
+          error: (Object error, _) => Text(
+            '$error',
+            style: AppTextStyles.bodySmall.copyWith(
+              color: AppColors.errorFor(brightness),
+            ),
           ),
         ),
         if (actionState.message != null) ...<Widget>[
@@ -448,6 +504,12 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
       _documentDate = initialDocument.docDate;
       _expiryDate = initialDocument.expiryDate;
       _sourcePath = initialDocument.localFilePath;
+      _selectedAssetId = initialDocument.linkedAssetId;
+    } else if (widget.preselectedAssetId != null) {
+      _step = _AddDocumentStep.metadata;
+      _selectedAssetId = widget.preselectedAssetId;
+      _selectedAssetLabel = widget.preselectedAssetLabel;
+      _assetController.text = widget.preselectedAssetLabel ?? '';
     }
     _initialized = true;
   }
@@ -585,7 +647,7 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
           issuer: _issuerController.text,
           docDate: _documentDate,
           expiryDate: _expiryDate,
-          linkedAssetId: null,
+          linkedAssetId: _selectedAssetId,
           localFilePath: fallbackPath,
           fileSizeBytes: fileSize,
           mimeType: _mimeTypeForPath(fallbackPath),
@@ -618,6 +680,171 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
     } on StateError {
       return;
     }
+  }
+
+  void _syncSelectedAssetLabel(List<DocumentAssetOption>? options) {
+    if (_selectedAssetId == null || options == null || options.isEmpty) {
+      return;
+    }
+    if (_selectedAssetLabel != null && _assetController.text == _selectedAssetLabel) {
+      return;
+    }
+    for (final option in options) {
+      if (option.id == _selectedAssetId) {
+        _selectedAssetLabel = option.name;
+        _assetController.text = option.name;
+        return;
+      }
+    }
+  }
+
+  Future<void> _openAssetPicker({
+    required String householdId,
+    required List<DocumentAssetOption> options,
+  }) async {
+    if (options.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No assets added yet — add one in Maintenance.'),
+        ),
+      );
+      return;
+    }
+
+    final selected = await showModalBottomSheet<DocumentAssetOption>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        final TextEditingController searchController = TextEditingController();
+        var query = '';
+        return StatefulBuilder(
+          builder: (BuildContext context, void Function(void Function()) setModalState) {
+            final normalizedQuery = query.trim().toLowerCase();
+            final filtered = options.where((DocumentAssetOption option) {
+              if (normalizedQuery.isEmpty) {
+                return true;
+              }
+              return option.name.toLowerCase().contains(normalizedQuery) ||
+                  option.category.toLowerCase().contains(normalizedQuery);
+            }).toList();
+            final brightness = Theme.of(context).brightness;
+            return SafeArea(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.72,
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceFor(brightness),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(AppRadius.radiusLg),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSpacing.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        'Link to Asset',
+                        style: AppTextStyles.headlineMedium.copyWith(
+                          color: AppColors.textPrimaryFor(brightness),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.md),
+                      HearthTextField(
+                        label: 'Search assets',
+                        hintText: 'Find by name or category',
+                        controller: searchController,
+                        textInputAction: TextInputAction.search,
+                        onSubmitted: (_) {},
+                        key: ValueKey<String>(query),
+                      ),
+                      Builder(
+                        builder: (BuildContext context) {
+                          if (searchController.text != query) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (context.mounted) {
+                                setModalState(() {
+                                  query = searchController.text;
+                                });
+                              }
+                            });
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                      const SizedBox(height: AppSpacing.sm),
+                      Expanded(
+                        child: filtered.isEmpty
+                            ? const Center(
+                                child: Text('No assets match your search.'),
+                              )
+                            : ListView.separated(
+                                itemBuilder: (BuildContext context, int index) {
+                                  final asset = filtered[index];
+                                  return HearthCard(
+                                    onTap: () => Navigator.of(context).pop(asset),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Icon(
+                                          HugeIcons.strokeRoundedCalendarSetting01,
+                                          color: AppColors.secondaryFor(brightness),
+                                        ),
+                                        const SizedBox(width: AppSpacing.md),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                asset.name,
+                                                style: AppTextStyles.titleLarge.copyWith(
+                                                  color: AppColors.textPrimaryFor(brightness),
+                                                ),
+                                              ),
+                                              const SizedBox(height: AppSpacing.xs),
+                                              Text(
+                                                asset.category,
+                                                style: AppTextStyles.bodySmall.copyWith(
+                                                  color: AppColors.textSecondaryFor(brightness),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(height: AppSpacing.sm),
+                                itemCount: filtered.length,
+                              ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    if (selected == null || !mounted) {
+      return;
+    }
+    setState(() {
+      _selectedAssetId = selected.id;
+      _selectedAssetLabel = selected.name;
+      _assetController.text = selected.name;
+    });
+  }
+
+  void _clearSelectedAsset() {
+    setState(() {
+      _selectedAssetId = null;
+      _selectedAssetLabel = null;
+      _assetController.clear();
+    });
   }
 
   Future<void> _setProcessingSource(bool value) async {

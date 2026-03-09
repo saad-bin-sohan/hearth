@@ -15,6 +15,7 @@ import 'package:hearth/features/finance/presentation/widgets/add_expense_sheet.d
 import 'package:hearth/features/grocery/presentation/grocery_notifier.dart';
 import 'package:hearth/features/grocery/presentation/sheets/add_item_sheet.dart';
 import 'package:hearth/features/home/presentation/widgets/more_modules_sheet.dart';
+import 'package:hearth/features/maintenance/presentation/providers/maintenance_task_providers.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class HomeShellScaffold extends ConsumerWidget {
@@ -29,6 +30,7 @@ class HomeShellScaffold extends ConsumerWidget {
         (label: 'Chores', icon: HugeIcons.strokeRoundedCheckList),
         (label: 'Documents', icon: HugeIcons.strokeRoundedFolderFileStorage),
         (label: 'Grocery', icon: HugeIcons.strokeRoundedShoppingCart01),
+        (label: 'Maintenance', icon: HugeIcons.strokeRoundedWrench01),
         (label: 'Household', icon: HugeIcons.strokeRoundedHouse03),
         (label: 'More', icon: HugeIcons.strokeRoundedMoreHorizontal),
       ];
@@ -39,6 +41,7 @@ class HomeShellScaffold extends ConsumerWidget {
     ref.watch(choresBootstrapProvider);
     ref.watch(documentBootstrapProvider);
     ref.watch(groceryBootstrapProvider);
+    ref.watch(maintenanceBootstrapProvider);
     final brightness = Theme.of(context).brightness;
     final showFab =
         navigationShell.currentIndex == 0 ||

@@ -9,6 +9,7 @@ import 'package:hearth/core/widgets/animated/hearth_list_item_entry.dart';
 import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/core/widgets/hearth_empty_state.dart';
 import 'package:hearth/core/widgets/hearth_section_header.dart';
+import 'package:hearth/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:hearth/features/chores/presentation/widgets/chores_summary_card.dart';
 import 'package:hearth/features/documents/presentation/widgets/documents_summary_card.dart';
 import 'package:hearth/features/finance/domain/finance_models.dart';
@@ -17,6 +18,7 @@ import 'package:hearth/features/finance/presentation/finance_notifier.dart';
 import 'package:hearth/features/grocery/presentation/widgets/grocery_summary_card.dart';
 import 'package:hearth/features/home/presentation/widgets/summary_card.dart';
 import 'package:hearth/features/household/presentation/household_notifier.dart';
+import 'package:hearth/features/maintenance/presentation/widgets/maintenance_summary_card.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -36,6 +38,12 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Home'),
         automaticallyImplyLeading: false,
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => context.go(CalendarScreen.routePath),
+            icon: const Icon(HugeIcons.strokeRoundedCalendar01),
+          ),
+        ],
       ),
       body: ListView(
         padding: const EdgeInsets.all(AppSpacing.md),
@@ -71,7 +79,7 @@ class HomeScreen extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           SizedBox(
-            height: 128,
+            height: 136,
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: <Widget>[
@@ -122,6 +130,8 @@ class HomeScreen extends ConsumerWidget {
                 const DocumentsSummaryCard(),
                 const SizedBox(width: AppSpacing.md),
                 const GrocerySummaryCard(),
+                const SizedBox(width: AppSpacing.md),
+                const MaintenanceSummaryCard(),
               ],
             ),
           ),

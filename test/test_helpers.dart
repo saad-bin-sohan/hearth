@@ -5,6 +5,7 @@ import 'package:hearth/core/database/app_database.dart';
 import 'package:hearth/core/providers/theme_provider.dart';
 import 'package:hearth/features/documents/domain/document_models.dart';
 import 'package:hearth/features/documents/presentation/document_notifier.dart';
+import 'package:hearth/features/maintenance/presentation/providers/maintenance_task_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 AppDatabase createTestDatabase() {
@@ -32,5 +33,6 @@ List<Override> documentShellTestOverrides() {
       (Ref ref) => Stream<List<DocumentEntity>>.value(const <DocumentEntity>[]),
     ),
     documentBootstrapProvider.overrideWith((Ref ref) async {}),
+    maintenanceBootstrapProvider.overrideWith((Ref ref) async {}),
   ];
 }

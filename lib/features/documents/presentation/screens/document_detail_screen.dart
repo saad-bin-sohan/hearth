@@ -16,6 +16,7 @@ import 'package:hearth/core/widgets/hearth_button.dart';
 import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/features/documents/domain/document_models.dart';
 import 'package:hearth/features/documents/presentation/document_notifier.dart';
+import 'package:hearth/features/documents/presentation/providers/document_asset_providers.dart';
 import 'package:hearth/features/documents/presentation/sheets/add_document_sheet.dart';
 import 'package:hearth/features/documents/presentation/widgets/document_expiry_badge_extensions.dart';
 import 'package:hearth/features/documents/presentation/widgets/vault_lock_overlay.dart';
@@ -305,14 +306,34 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                                     ),
                                   ),
                                   const SizedBox(height: AppSpacing.md),
-                                  _MetadataRow(
-                                    icon: HugeIcons.strokeRoundedLock,
-                                    label: 'Linked Asset',
-                                    value: document.linkedAssetId == null
-                                        ? 'Not linked'
-                                        : document.linkedAssetId!,
-                                    subdued: document.linkedAssetId == null,
-                                  ),
+                                  if (document.linkedAssetId == null)
+                                    const _MetadataRow(
+                                      icon: HugeIcons.strokeRoundedLock,
+                                      label: 'Linked Asset',
+                                      value: 'Not linked',
+                                      subdued: true,
+                                    )
+                                  else
+                                    Consumer(
+                                      builder: (
+                                        BuildContext context,
+                                        WidgetRef ref,
+                                        Widget? child,
+                                      ) {
+                                        final assetNameAsync = ref.watch(
+                                          linkedAssetNameProvider(
+                                            document.linkedAssetId!,
+                                          ),
+                                        );
+                                        return _MetadataRow(
+                                          icon: HugeIcons.strokeRoundedLock,
+                                          label: 'Linked Asset',
+                                          value:
+                                              assetNameAsync.valueOrNull ??
+                                              'Linked asset',
+                                        );
+                                      },
+                                    ),
                                 ],
                               ),
                             ),

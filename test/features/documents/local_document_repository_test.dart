@@ -78,6 +78,24 @@ void main() {
     );
   });
 
+  test('linkedAssetId persists across document saves and updates', () async {
+    final document = _document(id: 'document-linked', linkedAssetId: 'asset-1');
+
+    await repository.saveDocument(document);
+    expect(
+      (await repository.getDocumentById(document.id))?.linkedAssetId,
+      'asset-1',
+    );
+
+    await repository.saveDocument(
+      document.copyWith(linkedAssetId: 'asset-2'),
+    );
+    expect(
+      (await repository.getDocumentById(document.id))?.linkedAssetId,
+      'asset-2',
+    );
+  });
+
   test('deleting a folder moves contained documents back to root', () async {
     const householdId = 'household-1';
     final folder = _folder(
@@ -245,6 +263,7 @@ DocumentEntity _document({
   String folderPath = 'root',
   String? issuer = 'National Authority',
   DateTime? expiryDate,
+  String? linkedAssetId,
   String localFilePath = '/tmp/passport.pdf',
   int fileSizeBytes = 2048,
   String mimeType = 'application/pdf',
@@ -258,6 +277,7 @@ DocumentEntity _document({
     folderPath: folderPath,
     issuer: issuer,
     expiryDate: expiryDate,
+    linkedAssetId: linkedAssetId,
     localFilePath: localFilePath,
     fileSizeBytes: fileSizeBytes,
     mimeType: mimeType,

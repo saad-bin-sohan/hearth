@@ -5,6 +5,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hearth/features/documents/domain/document_models.dart';
 import 'package:hearth/features/grocery/domain/grocery_models.dart';
+import 'package:hearth/features/maintenance/domain/entities/asset.dart';
+import 'package:hearth/features/maintenance/domain/entities/maintenance_task.dart';
 
 abstract class NotificationService {
   Future<void> initialize();
@@ -21,6 +23,12 @@ abstract class NotificationService {
   );
 
   Future<void> schedulePantryExpiryAlerts(List<PantryItemEntity> pantryItems);
+
+  Future<void> scheduleMaintenanceOverdueAlerts(
+    List<MaintenanceTask> overdueTasks,
+  );
+
+  Future<void> scheduleWarrantyExpiryAlerts(List<Asset> expiringAssets);
 }
 
 final notificationServiceProvider = Provider<NotificationService>((Ref ref) {
@@ -50,6 +58,14 @@ class NoopNotificationService implements NotificationService {
   Future<void> schedulePantryExpiryAlerts(
     List<PantryItemEntity> pantryItems,
   ) async {}
+
+  @override
+  Future<void> scheduleMaintenanceOverdueAlerts(
+    List<MaintenanceTask> overdueTasks,
+  ) async {}
+
+  @override
+  Future<void> scheduleWarrantyExpiryAlerts(List<Asset> expiringAssets) async {}
 }
 
 class LocalNotificationService implements NotificationService {
@@ -167,6 +183,63 @@ class LocalNotificationService implements NotificationService {
     }
   }
 
+  @override
+  Future<void> scheduleMaintenanceOverdueAlerts(
+    List<MaintenanceTask> overdueTasks,
+  ) async {
+    if (!(Platform.isAndroid || Platform.isIOS)) {
+      return;
+    }
+
+    for (var notificationId = 1000; notificationId < 1500; notificationId += 1) {
+      await _plugin.cancel(notificationId);
+    }
+
+    final planned = plannedMaintenanceOverdueEntries(overdueTasks);
+    for (final entry in planned) {
+      final dueDate = entry.task.dueDate;
+      if (dueDate == null) {
+        continue;
+      }
+      await _plugin.show(
+        entry.id,
+        '🔧 Maintenance task overdue',
+        '${entry.task.title} was due on ${_formatDate(dueDate)}',
+        _maintenanceNotificationDetails,
+      );
+    }
+  }
+
+  @override
+  Future<void> scheduleWarrantyExpiryAlerts(List<Asset> expiringAssets) async {
+    if (!(Platform.isAndroid || Platform.isIOS)) {
+      return;
+    }
+
+    for (var notificationId = 1500; notificationId < 2000; notificationId += 1) {
+      await _plugin.cancel(notificationId);
+    }
+
+    final planned = plannedWarrantyNotificationEntries(expiringAssets);
+    for (final entry in planned) {
+      final daysUntil = entry.asset.daysUntilWarranty;
+      if (daysUntil == null) {
+        continue;
+      }
+      final title = daysUntil <= 7
+          ? '⚠️ Warranty expiring this week'
+          : '🛡️ Warranty expiring soon';
+      final body =
+          '${entry.asset.name} warranty expires in $daysUntil day${daysUntil == 1 ? '' : 's'}';
+      await _plugin.show(
+        entry.id,
+        title,
+        body,
+        _maintenanceNotificationDetails,
+      );
+    }
+  }
+
   @visibleForTesting
   static int genericNotificationIdFor(String id) {
     return 4000 + ((id.hashCode & 0x7fffffff) % 1000000);
@@ -175,6 +248,45 @@ class LocalNotificationService implements NotificationService {
   @visibleForTesting
   static int documentNotificationIdFor(String documentId, String slot) {
     return 2000 + ('document-$documentId-$slot'.hashCode & 0x7fffffff) % 1000;
+  }
+
+  @visibleForTesting
+  static List<({int id, MaintenanceTask task})> plannedMaintenanceOverdueEntries(
+    List<MaintenanceTask> overdueTasks,
+  ) {
+    final planned = <({int id, MaintenanceTask task})>[];
+    var idCounter = 1000;
+    for (final task in overdueTasks) {
+      if (task.dueDate == null) {
+        continue;
+      }
+      planned.add((id: idCounter++, task: task));
+      if (idCounter >= 1499) {
+        break;
+      }
+    }
+    return planned;
+  }
+
+  @visibleForTesting
+  static List<({int id, Asset asset})> plannedWarrantyNotificationEntries(
+    List<Asset> expiringAssets,
+  ) {
+    final planned = <({int id, Asset asset})>[];
+    var idCounter = 1500;
+    for (final asset in expiringAssets) {
+      final daysUntil = asset.daysUntilWarranty;
+      if (asset.warrantyExpiry == null || daysUntil == null || daysUntil < 0) {
+        continue;
+      }
+      if (daysUntil <= 60) {
+        planned.add((id: idCounter++, asset: asset));
+      }
+      if (idCounter >= 1999) {
+        break;
+      }
+    }
+    return planned;
   }
 
   @visibleForTesting
@@ -207,6 +319,10 @@ class LocalNotificationService implements NotificationService {
     return documentNotificationIdFor(documentId, slot);
   }
 
+  String _formatDate(DateTime value) {
+    return '${value.month}/${value.day}/${value.year}';
+  }
+
   static const NotificationDetails _choreNotificationDetails =
       NotificationDetails(
         android: AndroidNotificationDetails(
@@ -237,6 +353,18 @@ class LocalNotificationService implements NotificationService {
           'hearth_pantry',
           'Pantry expiry alerts',
           channelDescription: 'Expiry reminders for pantry items.',
+          importance: Importance.max,
+          priority: Priority.high,
+        ),
+        iOS: DarwinNotificationDetails(),
+      );
+
+  static const NotificationDetails _maintenanceNotificationDetails =
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          'hearth_maintenance',
+          'Maintenance alerts',
+          channelDescription: 'Overdue maintenance and warranty reminders.',
           importance: Importance.max,
           priority: Priority.high,
         ),
