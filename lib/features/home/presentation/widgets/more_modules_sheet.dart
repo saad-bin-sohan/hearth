@@ -4,6 +4,7 @@ import 'package:hearth/core/theme/app_colors.dart';
 import 'package:hearth/core/theme/app_dimensions.dart';
 import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/features/household/presentation/join_household_screen.dart';
+import 'package:hearth/features/household/presentation/member_management_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 class MoreModulesSheet extends StatelessWidget {
@@ -14,7 +15,6 @@ class MoreModulesSheet extends StatelessWidget {
     final brightness = Theme.of(context).brightness;
     final lockedColor = AppColors.textTertiaryFor(brightness);
     final lockedModules = <({String title, IconData icon})>[
-      (title: 'Finance Ledger', icon: HugeIcons.strokeRoundedComputerDollar),
       (title: 'Chore Manager', icon: HugeIcons.strokeRoundedCheckList),
       (title: 'Document Vault', icon: HugeIcons.strokeRoundedDocumentValidation),
       (title: 'Grocery & Pantry', icon: HugeIcons.strokeRoundedBookmark01),
@@ -25,6 +25,16 @@ class MoreModulesSheet extends StatelessWidget {
       children: <Widget>[
         Text('More', style: Theme.of(context).textTheme.headlineSmall),
         const SizedBox(height: AppSpacing.lg),
+        _SheetAction(
+          icon: HugeIcons.strokeRoundedUserGroup,
+          title: 'Members',
+          subtitle: 'Review roles, observers, and member access.',
+          onTap: () {
+            Navigator.of(context).pop();
+            context.push(MemberManagementScreen.routePath);
+          },
+        ),
+        const SizedBox(height: AppSpacing.md),
         _SheetAction(
           icon: HugeIcons.strokeRoundedAddTeam,
           title: 'Join a household',

@@ -15,6 +15,8 @@ import 'package:hugeicons/hugeicons.dart';
 class MemberManagementScreen extends ConsumerWidget {
   const MemberManagementScreen({this.showAppBar = true, super.key});
 
+  static const String routePath = '/members';
+
   final bool showAppBar;
 
   @override

@@ -39,7 +39,7 @@ void main() {
     expect(find.text('Welcome back'), findsOneWidget);
   });
 
-  testWidgets('Authenticated household session lands on home and opens More sheet', (
+  testWidgets('Authenticated household session exposes Finance and Members in More', (
     WidgetTester tester,
   ) async {
     SharedPreferences.setMockInitialValues(<String, Object>{
@@ -82,10 +82,13 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Quick Summary'), findsOneWidget);
+    expect(find.text('Finance'), findsOneWidget);
+    expect(find.text('Members'), findsNothing);
 
     await tester.tap(find.text('More'));
     await tester.pump(const Duration(milliseconds: 400));
 
+    expect(find.text('Members'), findsOneWidget);
     expect(find.text('Join a household'), findsOneWidget);
 
     await tester.tapAt(const Offset(20, 20));

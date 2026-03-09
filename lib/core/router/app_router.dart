@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hearth/features/auth/presentation/routes.dart';
+import 'package:hearth/features/finance/presentation/routes.dart';
 import 'package:hearth/features/home/presentation/home_screen.dart';
 import 'package:hearth/features/home/presentation/settings_screen.dart';
 import 'package:hearth/features/home/presentation/widgets/home_shell_scaffold.dart';
@@ -14,6 +15,10 @@ final appRouterProvider = Provider<GoRouter>((Ref ref) {
     routes: <RouteBase>[
       ...authRoutes,
       ...householdRoutes,
+      GoRoute(
+        path: MemberManagementScreen.routePath,
+        builder: (context, state) => const MemberManagementScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return HomeShellScaffold(navigationShell: navigationShell);
@@ -28,20 +33,13 @@ final appRouterProvider = Provider<GoRouter>((Ref ref) {
             ],
           ),
           StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: '/household',
-                builder: (context, state) => const HouseholdModule(),
-              ),
-            ],
+            routes: financeRoutes,
           ),
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                path: '/members',
-                builder: (context, state) => const MemberManagementScreen(
-                  showAppBar: false,
-                ),
+                path: '/household',
+                builder: (context, state) => const HouseholdModule(),
               ),
             ],
           ),

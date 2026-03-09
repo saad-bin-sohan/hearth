@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hearth/core/theme/app_animations.dart';
 import 'package:hearth/core/theme/app_colors.dart';
 import 'package:hearth/core/theme/app_dimensions.dart';
 import 'package:hearth/core/widgets/animated/hearth_fab_entry.dart';
 import 'package:hearth/core/widgets/hearth_bottom_sheet.dart';
-import 'package:hearth/core/widgets/hearth_button.dart';
+import 'package:hearth/features/finance/presentation/finance_notifier.dart';
+import 'package:hearth/features/finance/presentation/widgets/add_expense_sheet.dart';
 import 'package:hearth/features/home/presentation/widgets/more_modules_sheet.dart';
 import 'package:hugeicons/hugeicons.dart';
 
-class HomeShellScaffold extends StatelessWidget {
+class HomeShellScaffold extends ConsumerWidget {
   const HomeShellScaffold({required this.navigationShell, super.key});
 
   final StatefulNavigationShell navigationShell;
@@ -17,46 +19,27 @@ class HomeShellScaffold extends StatelessWidget {
   static const List<({String label, IconData icon})> _items =
       <({String label, IconData icon})>[
         (label: 'Home', icon: HugeIcons.strokeRoundedHome03),
+        (label: 'Finance', icon: HugeIcons.strokeRoundedComputerDollar),
         (label: 'Household', icon: HugeIcons.strokeRoundedHouse03),
-        (label: 'Members', icon: HugeIcons.strokeRoundedUserGroup),
         (label: 'Settings', icon: HugeIcons.strokeRoundedSettings02),
         (label: 'More', icon: HugeIcons.strokeRoundedMoreHorizontal),
       ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(financeBootstrapProvider);
     final brightness = Theme.of(context).brightness;
+    final showFab = navigationShell.currentIndex == 0 || navigationShell.currentIndex == 1;
     return Scaffold(
       body: navigationShell,
-      floatingActionButton: navigationShell.currentIndex == 0
+      floatingActionButton: showFab
           ? HearthFABEntry(
               child: FloatingActionButton.extended(
-                onPressed: () {
-                  showHearthBottomSheet<void>(
-                    context: context,
-                    builder: (context) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text('Quick Add', style: Theme.of(context).textTheme.headlineSmall),
-                          const SizedBox(height: AppSpacing.sm),
-                          Text(
-                            'Phase 1 keeps Quick Add as a polished placeholder. Finance, chores, documents, and more wire into this sheet in later phases.',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                          const SizedBox(height: AppSpacing.lg),
-                          HearthButton(
-                            label: 'Close',
-                            variant: HearthButtonVariant.ghost,
-                            onPressed: () => Navigator.of(context).pop(),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                },
+                onPressed: () => showAddExpenseSheet(context),
                 icon: const Icon(HugeIcons.strokeRoundedAddCircle),
-                label: const Text('Quick Add'),
+                label: Text(
+                  navigationShell.currentIndex == 1 ? 'Add Expense' : 'Quick Add',
+                ),
               ),
             )
           : null,
