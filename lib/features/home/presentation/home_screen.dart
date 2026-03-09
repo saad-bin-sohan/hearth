@@ -10,6 +10,7 @@ import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/core/widgets/hearth_empty_state.dart';
 import 'package:hearth/core/widgets/hearth_section_header.dart';
 import 'package:hearth/features/chores/presentation/widgets/chores_summary_card.dart';
+import 'package:hearth/features/documents/presentation/widgets/documents_summary_card.dart';
 import 'package:hearth/features/finance/domain/finance_models.dart';
 import 'package:hearth/features/finance/presentation/expense_detail_screen.dart';
 import 'package:hearth/features/finance/presentation/finance_notifier.dart';
@@ -117,12 +118,7 @@ class HomeScreen extends ConsumerWidget {
                 const SizedBox(width: AppSpacing.md),
                 const ChoresSummaryCard(),
                 const SizedBox(width: AppSpacing.md),
-                const SummaryCard(
-                  title: 'Document Vault',
-                  metric: '0',
-                  caption: 'Files uploaded',
-                  accentColor: AppColors.accent,
-                ),
+                const DocumentsSummaryCard(),
               ],
             ),
           ),

@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hearth/features/auth/data/tables.dart';
 import 'package:hearth/features/chores/data/tables.dart';
+import 'package:hearth/features/documents/data/tables.dart';
 import 'package:hearth/features/finance/data/tables.dart';
 import 'package:hearth/features/household/data/tables.dart';
 
@@ -22,6 +23,8 @@ final appDatabaseProvider = Provider<AppDatabase>((Ref ref) {
     Chores,
     ChoreCompletions,
     ChoreDeferrals,
+    Documents,
+    VaultFolders,
     Expenses,
     Balances,
     CategoryBudgets,
@@ -34,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.test(super.executor);
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -52,6 +55,10 @@ class AppDatabase extends _$AppDatabase {
         await migrator.createTable(chores);
         await migrator.createTable(choreCompletions);
         await migrator.createTable(choreDeferrals);
+      }
+      if (from < 4) {
+        await migrator.createTable(documents);
+        await migrator.createTable(vaultFolders);
       }
     },
   );

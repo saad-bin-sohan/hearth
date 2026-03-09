@@ -15,10 +15,6 @@ class MoreModulesSheet extends StatelessWidget {
     final brightness = Theme.of(context).brightness;
     final lockedColor = AppColors.textTertiaryFor(brightness);
     final lockedModules = <({String title, IconData icon})>[
-      (
-        title: 'Document Vault',
-        icon: HugeIcons.strokeRoundedDocumentValidation,
-      ),
       (title: 'Grocery & Pantry', icon: HugeIcons.strokeRoundedBookmark01),
       (
         title: 'Maintenance Ledger',

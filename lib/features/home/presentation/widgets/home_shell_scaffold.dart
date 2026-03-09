@@ -8,6 +8,8 @@ import 'package:hearth/core/widgets/animated/hearth_fab_entry.dart';
 import 'package:hearth/core/widgets/hearth_bottom_sheet.dart';
 import 'package:hearth/features/chores/presentation/chore_notifier.dart';
 import 'package:hearth/features/chores/presentation/widgets/add_edit_chore_sheet.dart';
+import 'package:hearth/features/documents/presentation/document_notifier.dart';
+import 'package:hearth/features/documents/presentation/sheets/add_document_sheet.dart';
 import 'package:hearth/features/finance/presentation/finance_notifier.dart';
 import 'package:hearth/features/finance/presentation/widgets/add_expense_sheet.dart';
 import 'package:hearth/features/home/presentation/widgets/more_modules_sheet.dart';
@@ -23,6 +25,7 @@ class HomeShellScaffold extends ConsumerWidget {
         (label: 'Home', icon: HugeIcons.strokeRoundedHome03),
         (label: 'Finance', icon: HugeIcons.strokeRoundedComputerDollar),
         (label: 'Chores', icon: HugeIcons.strokeRoundedCheckList),
+        (label: 'Documents', icon: HugeIcons.strokeRoundedFolderFileStorage),
         (label: 'Household', icon: HugeIcons.strokeRoundedHouse03),
         (label: 'Settings', icon: HugeIcons.strokeRoundedSettings02),
         (label: 'More', icon: HugeIcons.strokeRoundedMoreHorizontal),
@@ -32,11 +35,13 @@ class HomeShellScaffold extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(financeBootstrapProvider);
     ref.watch(choresBootstrapProvider);
+    ref.watch(documentBootstrapProvider);
     final brightness = Theme.of(context).brightness;
     final showFab =
         navigationShell.currentIndex == 0 ||
         navigationShell.currentIndex == 1 ||
-        navigationShell.currentIndex == 2;
+        navigationShell.currentIndex == 2 ||
+        navigationShell.currentIndex == 3;
     return Scaffold(
       body: navigationShell,
       floatingActionButton: showFab
@@ -47,12 +52,17 @@ class HomeShellScaffold extends ConsumerWidget {
                     showAddEditChoreSheet(context);
                     return;
                   }
+                  if (navigationShell.currentIndex == 3) {
+                    showAddDocumentSheet(context);
+                    return;
+                  }
                   showAddExpenseSheet(context);
                 },
                 icon: const Icon(HugeIcons.strokeRoundedAddCircle),
                 label: Text(switch (navigationShell.currentIndex) {
                   1 => 'Add Expense',
                   2 => 'Add Chore',
+                  3 => 'Add Document',
                   _ => 'Quick Add',
                 }),
               ),

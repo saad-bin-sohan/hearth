@@ -29,9 +29,18 @@ void main() {
       final preferences = await SharedPreferences.getInstance();
       final database = createTestDatabase();
       addTearDown(database.close);
+      addTearDown(() async {
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 1));
+      });
 
       await tester.pumpWidget(
-        createTestApp(preferences: preferences, database: database),
+        createTestApp(
+          preferences: preferences,
+          database: database,
+          overrides: documentShellTestOverrides(),
+        ),
       );
       await tester.pump(const Duration(milliseconds: 800));
       await tester.pump(const Duration(milliseconds: 300));
@@ -51,6 +60,11 @@ void main() {
       final preferences = await SharedPreferences.getInstance();
       final database = createTestDatabase();
       addTearDown(database.close);
+      addTearDown(() async {
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 1));
+      });
 
       final authRepository = LocalAuthRepository(
         database: database,
@@ -77,13 +91,19 @@ void main() {
       await preferences.setString('active_household_id', household.id);
 
       await tester.pumpWidget(
-        createTestApp(preferences: preferences, database: database),
+        createTestApp(
+          preferences: preferences,
+          database: database,
+          overrides: documentShellTestOverrides(),
+        ),
       );
       await tester.pump(const Duration(milliseconds: 800));
       await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('Quick Summary'), findsOneWidget);
       expect(find.text('Finance'), findsOneWidget);
+      expect(find.text('Documents'), findsWidgets);
+      expect(find.text('documents saved'), findsOneWidget);
       expect(find.text('Members'), findsNothing);
 
       await tester.tap(find.text('More'));
@@ -109,6 +129,11 @@ void main() {
       final preferences = await SharedPreferences.getInstance();
       final database = createTestDatabase();
       addTearDown(database.close);
+      addTearDown(() async {
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 1));
+      });
       final router = GoRouter(
         initialLocation: SignUpScreen.routePath,
         routes: <RouteBase>[

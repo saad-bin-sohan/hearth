@@ -20,12 +20,21 @@ void main() {
     tester.view.physicalSize = const Size(1280, 2200);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(() async {
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 1));
+    });
 
     final setup = await _createAuthenticatedAppState();
     addTearDown(setup.database.close);
 
     await tester.pumpWidget(
-      createTestApp(preferences: setup.preferences, database: setup.database),
+      createTestApp(
+        preferences: setup.preferences,
+        database: setup.database,
+        overrides: documentShellTestOverrides(),
+      ),
     );
     await tester.pump(const Duration(milliseconds: 800));
     await tester.pump(const Duration(milliseconds: 300));
@@ -51,7 +60,8 @@ void main() {
     expect(find.text('Sweep kitchen'), findsWidgets);
 
     await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pump(const Duration(milliseconds: 50));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1));
   });
 }
 

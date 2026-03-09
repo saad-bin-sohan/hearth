@@ -42,4 +42,20 @@ class AppFormatters {
   static String fullDateTime(DateTime value) {
     return DateFormat('MMM d, y • h:mm a').format(value);
   }
+
+  static String fileSize(int bytes) {
+    if (bytes < 1024) {
+      return '$bytes B';
+    }
+    final kb = bytes / 1024;
+    if (kb < 1024) {
+      return '${kb.toStringAsFixed(kb >= 100 ? 0 : 1)} KB';
+    }
+    final mb = kb / 1024;
+    if (mb < 1024) {
+      return '${mb.toStringAsFixed(mb >= 100 ? 0 : 1)} MB';
+    }
+    final gb = mb / 1024;
+    return '${gb.toStringAsFixed(gb >= 100 ? 0 : 1)} GB';
+  }
 }
