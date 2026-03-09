@@ -10,13 +10,14 @@ import 'package:hearth/core/theme/app_dimensions.dart';
 import 'package:hearth/core/theme/app_text_styles.dart';
 import 'package:hearth/core/utils/formatters.dart';
 import 'package:hearth/core/widgets/animated/hearth_number_ticker.dart';
+import 'package:hearth/core/widgets/expiry_badge.dart';
 import 'package:hearth/core/widgets/hearth_avatar.dart';
 import 'package:hearth/core/widgets/hearth_button.dart';
 import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/features/documents/domain/document_models.dart';
 import 'package:hearth/features/documents/presentation/document_notifier.dart';
 import 'package:hearth/features/documents/presentation/sheets/add_document_sheet.dart';
-import 'package:hearth/features/documents/presentation/widgets/expiry_badge.dart';
+import 'package:hearth/features/documents/presentation/widgets/document_expiry_badge_extensions.dart';
 import 'package:hearth/features/documents/presentation/widgets/vault_lock_overlay.dart';
 import 'package:hearth/features/household/domain/household_models.dart';
 import 'package:hearth/features/household/presentation/household_notifier.dart';
@@ -29,7 +30,8 @@ class DocumentDetailScreen extends ConsumerStatefulWidget {
   final String documentId;
 
   @override
-  ConsumerState<DocumentDetailScreen> createState() => _DocumentDetailScreenState();
+  ConsumerState<DocumentDetailScreen> createState() =>
+      _DocumentDetailScreenState();
 }
 
 class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
@@ -97,17 +99,18 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                         _confirmDelete(document);
                       }
                     },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      const PopupMenuItem<String>(
-                        value: 'share',
-                        child: Text('Share'),
-                      ),
-                      if (canEdit)
-                        const PopupMenuItem<String>(
-                          value: 'delete',
-                          child: Text('Delete'),
-                        ),
-                    ],
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: 'share',
+                            child: Text('Share'),
+                          ),
+                          if (canEdit)
+                            const PopupMenuItem<String>(
+                              value: 'delete',
+                              child: Text('Delete'),
+                            ),
+                        ],
                   ),
                 ],
               );
@@ -123,7 +126,8 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
             if (document == null) {
               return const Center(child: Text('Document not found.'));
             }
-            final uploadedByName = membersAsync.valueOrNull
+            final uploadedByName =
+                membersAsync.valueOrNull
                     ?.where(
                       (HouseholdMember member) =>
                           member.userId == document.uploadedByUserId,
@@ -137,13 +141,13 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
             final folderName = document.folderPath == 'root'
                 ? 'Root'
                 : foldersAsync.valueOrNull
-                        ?.where(
-                          (VaultFolderEntity folder) =>
-                              folder.fullPath == document.folderPath,
-                        )
-                        .map((VaultFolderEntity folder) => folder.name)
-                        .firstWhere((_) => true, orElse: () => 'Folder') ??
-                    'Folder';
+                          ?.where(
+                            (VaultFolderEntity folder) =>
+                                folder.fullPath == document.folderPath,
+                          )
+                          .map((VaultFolderEntity folder) => folder.name)
+                          .firstWhere((_) => true, orElse: () => 'Folder') ??
+                      'Folder';
             final canEdit =
                 document.uploadedByUserId == currentUserId ||
                 roleAsync.valueOrNull == HouseholdRole.admin;
@@ -188,7 +192,8 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                                   if (document.issuer != null) ...<Widget>[
                                     const SizedBox(height: AppSpacing.md),
                                     _MetadataRow(
-                                      icon: HugeIcons.strokeRoundedDocumentValidation,
+                                      icon: HugeIcons
+                                          .strokeRoundedDocumentValidation,
                                       label: 'Issuer',
                                       value: document.issuer!,
                                     ),
@@ -220,17 +225,22 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                                                 'Expiry',
                                                 style: AppTextStyles.bodySmall
                                                     .copyWith(
-                                                  color:
-                                                      AppColors.textSecondaryFor(
-                                                    brightness,
-                                                  ),
-                                                ),
+                                                      color:
+                                                          AppColors.textSecondaryFor(
+                                                            brightness,
+                                                          ),
+                                                    ),
                                               ),
                                               const SizedBox(
                                                 height: AppSpacing.xs,
                                               ),
                                               ExpiryBadge(
-                                                document: document,
+                                                urgency: document
+                                                    .expiryUrgency
+                                                    .badgeUrgency,
+                                                daysUntil:
+                                                    document.daysUntilExpiry,
+                                                date: document.expiryDate,
                                                 size: ExpiryBadgeSize.large,
                                               ),
                                             ],
@@ -262,11 +272,11 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                                               'Uploaded by',
                                               style: AppTextStyles.bodySmall
                                                   .copyWith(
-                                                color:
-                                                    AppColors.textSecondaryFor(
-                                                  brightness,
-                                                ),
-                                              ),
+                                                    color:
+                                                        AppColors.textSecondaryFor(
+                                                          brightness,
+                                                        ),
+                                                  ),
                                             ),
                                             const SizedBox(
                                               height: AppSpacing.xs,
@@ -275,11 +285,11 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
                                               '$uploadedByName • ${AppFormatters.shortDate(document.uploadedAt)}',
                                               style: AppTextStyles.bodyMedium
                                                   .copyWith(
-                                                color:
-                                                    AppColors.textPrimaryFor(
-                                                  brightness,
-                                                ),
-                                              ),
+                                                    color:
+                                                        AppColors.textPrimaryFor(
+                                                          brightness,
+                                                        ),
+                                                  ),
                                             ),
                                           ],
                                         ),
@@ -360,9 +370,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
   Widget _buildPreview(DocumentEntity document) {
     final file = File(document.localFilePath);
     if (!file.existsSync()) {
-      return const Center(
-        child: _MissingFileState(),
-      );
+      return const Center(child: _MissingFileState());
     }
     if (document.isPdf) {
       if (_pdfError != null) {
@@ -452,11 +460,7 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
       child: InteractiveViewer(
         minScale: 1,
         maxScale: 4,
-        child: Image.file(
-          file,
-          width: double.infinity,
-          fit: BoxFit.contain,
-        ),
+        child: Image.file(file, width: double.infinity, fit: BoxFit.contain),
       ),
     );
   }
@@ -497,7 +501,9 @@ class _DocumentDetailScreenState extends ConsumerState<DocumentDetailScreen> {
       return;
     }
     try {
-      await ref.read(documentNotifierProvider.notifier).deleteDocument(document);
+      await ref
+          .read(documentNotifierProvider.notifier)
+          .deleteDocument(document);
       if (mounted) {
         context.pop();
       }

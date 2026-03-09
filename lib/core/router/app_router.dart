@@ -4,6 +4,7 @@ import 'package:hearth/features/auth/presentation/routes.dart';
 import 'package:hearth/features/chores/presentation/routes.dart';
 import 'package:hearth/features/documents/presentation/routes.dart';
 import 'package:hearth/features/finance/presentation/routes.dart';
+import 'package:hearth/features/grocery/presentation/routes.dart';
 import 'package:hearth/features/home/presentation/home_screen.dart';
 import 'package:hearth/features/home/presentation/settings_screen.dart';
 import 'package:hearth/features/home/presentation/widgets/home_shell_scaffold.dart';
@@ -21,6 +22,10 @@ final appRouterProvider = Provider<GoRouter>((Ref ref) {
         path: MemberManagementScreen.routePath,
         builder: (context, state) => const MemberManagementScreen(),
       ),
+      GoRoute(
+        path: SettingsScreen.routePath,
+        builder: (context, state) => const SettingsScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return HomeShellScaffold(navigationShell: navigationShell);
@@ -37,19 +42,12 @@ final appRouterProvider = Provider<GoRouter>((Ref ref) {
           StatefulShellBranch(routes: financeRoutes),
           StatefulShellBranch(routes: choresRoutes),
           StatefulShellBranch(routes: documentsRoutes),
+          StatefulShellBranch(routes: groceryRoutes),
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
                 path: '/household',
                 builder: (context, state) => const HouseholdModule(),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: SettingsScreen.routePath,
-                builder: (context, state) => const SettingsScreen(),
               ),
             ],
           ),

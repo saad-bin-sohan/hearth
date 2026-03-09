@@ -6,9 +6,10 @@ import 'package:hearth/core/theme/app_colors.dart';
 import 'package:hearth/core/theme/app_dimensions.dart';
 import 'package:hearth/core/theme/app_text_styles.dart';
 import 'package:hearth/core/utils/formatters.dart';
+import 'package:hearth/core/widgets/expiry_badge.dart';
 import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/features/documents/domain/document_models.dart';
-import 'package:hearth/features/documents/presentation/widgets/expiry_badge.dart';
+import 'package:hearth/features/documents/presentation/widgets/document_expiry_badge_extensions.dart';
 import 'package:hugeicons/hugeicons.dart';
 
 enum DocumentCardVariant { grid, list }
@@ -78,14 +79,14 @@ class _DocumentCardState extends State<DocumentCard>
       },
       child: switch (widget.variant) {
         DocumentCardVariant.grid => _GridDocumentCard(
-            document: widget.document,
-            onTap: widget.onTap,
-          ),
+          document: widget.document,
+          onTap: widget.onTap,
+        ),
         DocumentCardVariant.list => _ListDocumentCard(
-            document: widget.document,
-            onTap: widget.onTap,
-            pulseCriticalExpiry: widget.pulseCriticalExpiry,
-          ),
+          document: widget.document,
+          onTap: widget.onTap,
+          pulseCriticalExpiry: widget.pulseCriticalExpiry,
+        ),
       },
     );
   }
@@ -132,7 +133,9 @@ class _GridDocumentCard extends StatelessWidget {
                   top: AppSpacing.sm,
                   right: AppSpacing.sm,
                   child: ExpiryBadge(
-                    document: document,
+                    urgency: document.expiryUrgency.badgeUrgency,
+                    daysUntil: document.daysUntilExpiry,
+                    date: document.expiryDate,
                     size: ExpiryBadgeSize.compact,
                   ),
                 ),
@@ -240,7 +243,12 @@ class _ListDocumentCard extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.sm),
           if (document.expiryUrgency != DocumentExpiryUrgency.none)
-            ExpiryBadge(document: document, pulse: pulseCriticalExpiry)
+            ExpiryBadge(
+              urgency: document.expiryUrgency.badgeUrgency,
+              daysUntil: document.daysUntilExpiry,
+              date: document.expiryDate,
+              pulse: pulseCriticalExpiry,
+            )
           else
             Text(
               AppFormatters.fileSize(document.fileSizeBytes),
@@ -270,12 +278,7 @@ class _DocumentThumbnail extends StatelessWidget {
     final brightness = Theme.of(context).brightness;
     final file = File(document.localFilePath);
     if (document.isImage && file.existsSync()) {
-      return Image.file(
-        file,
-        height: height,
-        width: width,
-        fit: BoxFit.cover,
-      );
+      return Image.file(file, height: height, width: width, fit: BoxFit.cover);
     }
     if (document.isPdf) {
       return Container(

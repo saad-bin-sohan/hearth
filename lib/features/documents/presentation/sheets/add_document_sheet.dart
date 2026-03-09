@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hearth/core/theme/app_colors.dart';
 import 'package:hearth/core/theme/app_dimensions.dart';
 import 'package:hearth/core/theme/app_text_styles.dart';
+import 'package:hearth/core/widgets/expiry_badge.dart';
 import 'package:hearth/core/widgets/hearth_bottom_sheet.dart';
 import 'package:hearth/core/widgets/hearth_button.dart';
 import 'package:hearth/core/widgets/hearth_card.dart';
@@ -15,7 +16,7 @@ import 'package:hearth/core/widgets/hearth_text_field.dart';
 import 'package:hearth/features/documents/domain/document_models.dart';
 import 'package:hearth/features/documents/presentation/document_notifier.dart';
 import 'package:hearth/features/documents/presentation/screens/camera_scan_screen.dart';
-import 'package:hearth/features/documents/presentation/widgets/expiry_badge.dart';
+import 'package:hearth/features/documents/presentation/widgets/document_expiry_badge_extensions.dart';
 import 'package:hearth/features/household/presentation/household_notifier.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,11 +42,7 @@ Future<void> showAddDocumentSheet(
 }
 
 class AddDocumentSheet extends ConsumerStatefulWidget {
-  const AddDocumentSheet({
-    this.documentId,
-    this.initialDocument,
-    super.key,
-  });
+  const AddDocumentSheet({this.documentId, this.initialDocument, super.key});
 
   final String? documentId;
   final DocumentEntity? initialDocument;
@@ -90,8 +87,8 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
     final initialDocumentAsync = widget.initialDocument != null
         ? AsyncValue<DocumentEntity?>.data(widget.initialDocument)
         : widget.documentId == null
-            ? const AsyncValue<DocumentEntity?>.data(null)
-            : ref.watch(documentDetailProvider(widget.documentId!));
+        ? const AsyncValue<DocumentEntity?>.data(null)
+        : ref.watch(documentDetailProvider(widget.documentId!));
 
     return householdAsync.when(
       data: (household) => initialDocumentAsync.when(
@@ -115,8 +112,9 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
                     ? 'Capture, upload, and organize the records your household needs close at hand.'
                     : 'Adjust the metadata, folder, and protection settings for this vault item.',
                 style: AppTextStyles.bodyMedium.copyWith(
-                  color:
-                      AppColors.textSecondaryFor(Theme.of(context).brightness),
+                  color: AppColors.textSecondaryFor(
+                    Theme.of(context).brightness,
+                  ),
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),
@@ -186,11 +184,14 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
     final previewPath = _sourcePath ?? previewDocument?.localFilePath;
     final previewMimeType =
         previewDocument?.mimeType ?? _mimeTypeForPath(previewPath ?? '');
-    final previewEntity = previewDocument ??
+    final previewEntity =
+        previewDocument ??
         DocumentEntity(
           id: 'preview',
           householdId: householdId,
-          title: _titleController.text.isEmpty ? 'Preview' : _titleController.text,
+          title: _titleController.text.isEmpty
+              ? 'Preview'
+              : _titleController.text,
           docType: _documentType,
           folderPath: _selectedFolderPath,
           localFilePath: previewPath ?? '',
@@ -230,10 +231,7 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
-        HearthTextField(
-          label: 'Title',
-          controller: _titleController,
-        ),
+        HearthTextField(label: 'Title', controller: _titleController),
         const SizedBox(height: AppSpacing.md),
         Text(
           'Document Type',
@@ -340,7 +338,14 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
         if (_expiryDate != null) ...<Widget>[
           const SizedBox(height: AppSpacing.sm),
           ExpiryBadge(
-            document: previewEntity.copyWith(expiryDate: _expiryDate),
+            urgency: previewEntity
+                .copyWith(expiryDate: _expiryDate)
+                .expiryUrgency
+                .badgeUrgency,
+            daysUntil: previewEntity
+                .copyWith(expiryDate: _expiryDate)
+                .daysUntilExpiry,
+            date: _expiryDate,
             size: ExpiryBadgeSize.large,
           ),
         ],
@@ -569,7 +574,9 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
     final fileSize = file.existsSync()
         ? file.lengthSync()
         : (initialDocument?.fileSizeBytes ?? 0);
-    final document = ref.read(documentNotifierProvider.notifier).draftDocument(
+    final document = ref
+        .read(documentNotifierProvider.notifier)
+        .draftDocument(
           id: initialDocument?.id,
           householdId: householdId,
           title: title,
@@ -588,19 +595,21 @@ class _AddDocumentSheetState extends ConsumerState<AddDocumentSheet> {
         );
     try {
       if (initialDocument == null) {
-        await ref.read(documentNotifierProvider.notifier).saveDocument(
-              document: document,
-              sourceFile: File(_sourcePath!),
-            );
+        await ref
+            .read(documentNotifierProvider.notifier)
+            .saveDocument(document: document, sourceFile: File(_sourcePath!));
       } else {
         final replacementPath =
             _sourcePath != null && _sourcePath != initialDocument.localFilePath
-                ? _sourcePath
-                : null;
-        await ref.read(documentNotifierProvider.notifier).updateDocument(
+            ? _sourcePath
+            : null;
+        await ref
+            .read(documentNotifierProvider.notifier)
+            .updateDocument(
               document: document,
-              replacementSourceFile:
-                  replacementPath == null ? null : File(replacementPath),
+              replacementSourceFile: replacementPath == null
+                  ? null
+                  : File(replacementPath),
             );
       }
       if (mounted) {
@@ -685,12 +694,7 @@ class _DocumentPreviewThumbnail extends StatelessWidget {
     if (path != null &&
         (mimeType == 'image/jpeg' || mimeType == 'image/png') &&
         File(path!).existsSync()) {
-      return Image.file(
-        File(path!),
-        width: 80,
-        height: 80,
-        fit: BoxFit.cover,
-      );
+      return Image.file(File(path!), width: 80, height: 80, fit: BoxFit.cover);
     }
     return Container(
       width: 80,

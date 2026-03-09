@@ -5,6 +5,7 @@ import 'package:hearth/features/auth/data/tables.dart';
 import 'package:hearth/features/chores/data/tables.dart';
 import 'package:hearth/features/documents/data/tables.dart';
 import 'package:hearth/features/finance/data/tables.dart';
+import 'package:hearth/features/grocery/data/tables.dart';
 import 'package:hearth/features/household/data/tables.dart';
 
 part 'app_database.g.dart';
@@ -29,6 +30,9 @@ final appDatabaseProvider = Provider<AppDatabase>((Ref ref) {
     Balances,
     CategoryBudgets,
     Settlements,
+    ShoppingListItems,
+    PantryItems,
+    ListTemplates,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -37,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.test(super.executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -59,6 +63,11 @@ class AppDatabase extends _$AppDatabase {
       if (from < 4) {
         await migrator.createTable(documents);
         await migrator.createTable(vaultFolders);
+      }
+      if (from < 5) {
+        await migrator.createTable(shoppingListItems);
+        await migrator.createTable(pantryItems);
+        await migrator.createTable(listTemplates);
       }
     },
   );

@@ -12,6 +12,8 @@ import 'package:hearth/features/documents/presentation/document_notifier.dart';
 import 'package:hearth/features/documents/presentation/sheets/add_document_sheet.dart';
 import 'package:hearth/features/finance/presentation/finance_notifier.dart';
 import 'package:hearth/features/finance/presentation/widgets/add_expense_sheet.dart';
+import 'package:hearth/features/grocery/presentation/grocery_notifier.dart';
+import 'package:hearth/features/grocery/presentation/sheets/add_item_sheet.dart';
 import 'package:hearth/features/home/presentation/widgets/more_modules_sheet.dart';
 import 'package:hugeicons/hugeicons.dart';
 
@@ -26,8 +28,8 @@ class HomeShellScaffold extends ConsumerWidget {
         (label: 'Finance', icon: HugeIcons.strokeRoundedComputerDollar),
         (label: 'Chores', icon: HugeIcons.strokeRoundedCheckList),
         (label: 'Documents', icon: HugeIcons.strokeRoundedFolderFileStorage),
+        (label: 'Grocery', icon: HugeIcons.strokeRoundedShoppingCart01),
         (label: 'Household', icon: HugeIcons.strokeRoundedHouse03),
-        (label: 'Settings', icon: HugeIcons.strokeRoundedSettings02),
         (label: 'More', icon: HugeIcons.strokeRoundedMoreHorizontal),
       ];
 
@@ -36,12 +38,14 @@ class HomeShellScaffold extends ConsumerWidget {
     ref.watch(financeBootstrapProvider);
     ref.watch(choresBootstrapProvider);
     ref.watch(documentBootstrapProvider);
+    ref.watch(groceryBootstrapProvider);
     final brightness = Theme.of(context).brightness;
     final showFab =
         navigationShell.currentIndex == 0 ||
         navigationShell.currentIndex == 1 ||
         navigationShell.currentIndex == 2 ||
-        navigationShell.currentIndex == 3;
+        navigationShell.currentIndex == 3 ||
+        navigationShell.currentIndex == 4;
     return Scaffold(
       body: navigationShell,
       floatingActionButton: showFab
@@ -56,6 +60,10 @@ class HomeShellScaffold extends ConsumerWidget {
                     showAddDocumentSheet(context);
                     return;
                   }
+                  if (navigationShell.currentIndex == 4) {
+                    showAddItemSheet(context);
+                    return;
+                  }
                   showAddExpenseSheet(context);
                 },
                 icon: const Icon(HugeIcons.strokeRoundedAddCircle),
@@ -63,6 +71,7 @@ class HomeShellScaffold extends ConsumerWidget {
                   1 => 'Add Expense',
                   2 => 'Add Chore',
                   3 => 'Add Document',
+                  4 => 'Add Item',
                   _ => 'Quick Add',
                 }),
               ),

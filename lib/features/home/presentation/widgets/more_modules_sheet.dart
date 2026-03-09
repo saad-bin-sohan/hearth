@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hearth/core/theme/app_colors.dart';
 import 'package:hearth/core/theme/app_dimensions.dart';
 import 'package:hearth/core/widgets/hearth_card.dart';
+import 'package:hearth/features/home/presentation/settings_screen.dart';
 import 'package:hearth/features/household/presentation/join_household_screen.dart';
 import 'package:hearth/features/household/presentation/member_management_screen.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -15,7 +16,6 @@ class MoreModulesSheet extends StatelessWidget {
     final brightness = Theme.of(context).brightness;
     final lockedColor = AppColors.textTertiaryFor(brightness);
     final lockedModules = <({String title, IconData icon})>[
-      (title: 'Grocery & Pantry', icon: HugeIcons.strokeRoundedBookmark01),
       (
         title: 'Maintenance Ledger',
         icon: HugeIcons.strokeRoundedCalendarSetting01,
@@ -43,6 +43,16 @@ class MoreModulesSheet extends StatelessWidget {
           onTap: () {
             Navigator.of(context).pop();
             context.push(JoinHouseholdScreen.routePath);
+          },
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _SheetAction(
+          icon: HugeIcons.strokeRoundedSettings02,
+          title: 'Settings',
+          subtitle: 'Theme, account, and app preferences.',
+          onTap: () {
+            Navigator.of(context).pop();
+            context.push(SettingsScreen.routePath);
           },
         ),
         const SizedBox(height: AppSpacing.md),

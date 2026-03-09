@@ -6,6 +6,7 @@ import 'package:hearth/core/database/app_database.dart';
 import 'package:hearth/core/providers/theme_provider.dart';
 import 'package:hearth/core/theme/app_theme.dart';
 import 'package:hearth/core/widgets/hearth_button.dart';
+import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/features/auth/data/local_auth_repository.dart';
 import 'package:hearth/features/auth/data/password_hasher.dart';
 import 'package:hearth/features/auth/presentation/sign_up_screen.dart';
@@ -103,22 +104,35 @@ void main() {
       expect(find.text('Quick Summary'), findsOneWidget);
       expect(find.text('Finance'), findsOneWidget);
       expect(find.text('Documents'), findsWidgets);
+      expect(find.text('Grocery'), findsWidgets);
       expect(find.text('documents saved'), findsOneWidget);
       expect(find.text('Members'), findsNothing);
 
-      await tester.tap(find.text('More'));
-      await tester.pump(const Duration(milliseconds: 400));
+      await tester.tap(find.text('Grocery').last);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+
+      expect(find.text('Shopping List'), findsOneWidget);
+
+      await tester.tap(find.text('More').last);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
 
       expect(find.text('Members'), findsOneWidget);
       expect(find.text('Join a household'), findsOneWidget);
+      expect(find.text('Settings'), findsOneWidget);
 
-      await tester.tapAt(const Offset(20, 20));
-      await tester.pump(const Duration(milliseconds: 400));
-
-      await tester.tap(find.text('Settings'));
-      await tester.pump(const Duration(milliseconds: 400));
+      final settingsCard = find.widgetWithText(HearthCard, 'Settings');
+      await tester.ensureVisible(settingsCard);
+      await tester.tap(settingsCard);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 600));
 
       expect(find.text('About Hearth'), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox.shrink());
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 1));
     },
   );
 

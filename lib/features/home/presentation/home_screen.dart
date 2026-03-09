@@ -14,6 +14,7 @@ import 'package:hearth/features/documents/presentation/widgets/documents_summary
 import 'package:hearth/features/finance/domain/finance_models.dart';
 import 'package:hearth/features/finance/presentation/expense_detail_screen.dart';
 import 'package:hearth/features/finance/presentation/finance_notifier.dart';
+import 'package:hearth/features/grocery/presentation/widgets/grocery_summary_card.dart';
 import 'package:hearth/features/home/presentation/widgets/summary_card.dart';
 import 'package:hearth/features/household/presentation/household_notifier.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -119,6 +120,8 @@ class HomeScreen extends ConsumerWidget {
                 const ChoresSummaryCard(),
                 const SizedBox(width: AppSpacing.md),
                 const DocumentsSummaryCard(),
+                const SizedBox(width: AppSpacing.md),
+                const GrocerySummaryCard(),
               ],
             ),
           ),

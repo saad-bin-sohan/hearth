@@ -4,20 +4,25 @@ import 'package:hearth/core/theme/app_colors.dart';
 import 'package:hearth/core/theme/app_dimensions.dart';
 import 'package:hearth/core/theme/app_text_styles.dart';
 import 'package:hearth/core/utils/formatters.dart';
-import 'package:hearth/features/documents/domain/document_models.dart';
 import 'package:hugeicons/hugeicons.dart';
+
+enum ExpiryBadgeUrgency { none, safe, warning, critical, expired }
 
 enum ExpiryBadgeSize { compact, standard, large }
 
 class ExpiryBadge extends StatefulWidget {
   const ExpiryBadge({
-    required this.document,
+    required this.urgency,
+    this.daysUntil,
+    this.date,
     this.size = ExpiryBadgeSize.standard,
     this.pulse = false,
     super.key,
   });
 
-  final DocumentEntity document;
+  final ExpiryBadgeUrgency urgency;
+  final int? daysUntil;
+  final DateTime? date;
   final ExpiryBadgeSize size;
   final bool pulse;
 
@@ -29,6 +34,9 @@ class _ExpiryBadgeState extends State<ExpiryBadge>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
+  bool get _shouldPulse =>
+      widget.pulse && widget.urgency == ExpiryBadgeUrgency.critical;
+
   @override
   void initState() {
     super.initState();
@@ -36,8 +44,7 @@ class _ExpiryBadgeState extends State<ExpiryBadge>
       vsync: this,
       duration: AppAnimations.verySlow,
     );
-    if (widget.pulse &&
-        widget.document.expiryUrgency == DocumentExpiryUrgency.critical) {
+    if (_shouldPulse) {
       _controller.repeat(reverse: true);
     } else {
       _controller.value = 1;
@@ -47,12 +54,11 @@ class _ExpiryBadgeState extends State<ExpiryBadge>
   @override
   void didUpdateWidget(covariant ExpiryBadge oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final shouldPulse =
-        widget.pulse &&
-        widget.document.expiryUrgency == DocumentExpiryUrgency.critical;
-    if (shouldPulse && !_controller.isAnimating) {
+    if (_shouldPulse && !_controller.isAnimating) {
       _controller.repeat(reverse: true);
-    } else if (!shouldPulse && _controller.isAnimating) {
+      return;
+    }
+    if (!_shouldPulse && _controller.isAnimating) {
       _controller
         ..stop()
         ..value = 1;
@@ -67,64 +73,50 @@ class _ExpiryBadgeState extends State<ExpiryBadge>
 
   @override
   Widget build(BuildContext context) {
-    final urgency = widget.document.expiryUrgency;
-    if (urgency == DocumentExpiryUrgency.none) {
+    if (widget.urgency == ExpiryBadgeUrgency.none) {
       return const SizedBox.shrink();
     }
 
     final brightness = Theme.of(context).brightness;
-    final daysUntil = widget.document.daysUntilExpiry;
     final showIcon = widget.size != ExpiryBadgeSize.compact;
     final height = switch (widget.size) {
       ExpiryBadgeSize.compact => AppSpacing.lg - AppSpacing.xs,
       ExpiryBadgeSize.standard => AppSpacing.lg,
       ExpiryBadgeSize.large => AppSpacing.xl - AppSpacing.xs,
     };
-    final theme = switch (urgency) {
-      DocumentExpiryUrgency.safe => (
-          background: AppColors.successContainer,
-          foreground: AppColors.successFor(brightness),
-          icon: HugeIcons.strokeRoundedCalendar01,
-        ),
-      DocumentExpiryUrgency.warning => (
-          background: AppColors.warningContainerFor(brightness),
-          foreground: AppColors.warningFor(brightness),
-          icon: HugeIcons.strokeRoundedCalendar01,
-        ),
-      DocumentExpiryUrgency.critical => (
-          background: AppColors.errorContainer,
-          foreground: AppColors.errorFor(brightness),
-          icon: HugeIcons.strokeRoundedCalendar01,
-        ),
-      DocumentExpiryUrgency.expired => (
-          background: AppColors.errorContainer,
-          foreground: AppColors.errorFor(brightness),
-          icon: HugeIcons.strokeRoundedCalendarBlock01,
-        ),
-      DocumentExpiryUrgency.none => (
-          background: AppColors.surfaceVariantFor(brightness),
-          foreground: AppColors.textTertiaryFor(brightness),
-          icon: HugeIcons.strokeRoundedCalendar01,
-        ),
+    final theme = switch (widget.urgency) {
+      ExpiryBadgeUrgency.safe => (
+        background: AppColors.successContainer,
+        foreground: AppColors.successFor(brightness),
+        icon: HugeIcons.strokeRoundedCalendar01,
+      ),
+      ExpiryBadgeUrgency.warning => (
+        background: AppColors.warningContainerFor(brightness),
+        foreground: AppColors.warningFor(brightness),
+        icon: HugeIcons.strokeRoundedCalendar01,
+      ),
+      ExpiryBadgeUrgency.critical => (
+        background: AppColors.errorContainer,
+        foreground: AppColors.errorFor(brightness),
+        icon: HugeIcons.strokeRoundedCalendar01,
+      ),
+      ExpiryBadgeUrgency.expired => (
+        background: AppColors.errorContainer,
+        foreground: AppColors.errorFor(brightness),
+        icon: HugeIcons.strokeRoundedCalendarBlock01,
+      ),
+      ExpiryBadgeUrgency.none => (
+        background: AppColors.surfaceVariantFor(brightness),
+        foreground: AppColors.textTertiaryFor(brightness),
+        icon: HugeIcons.strokeRoundedCalendar01,
+      ),
     };
-    final label = switch (urgency) {
-      DocumentExpiryUrgency.expired => widget.size == ExpiryBadgeSize.large &&
-              widget.document.expiryDate != null
-          ? 'Expired • ${AppFormatters.shortDate(widget.document.expiryDate!)}'
-          : 'Expired',
-      _ => widget.size == ExpiryBadgeSize.large &&
-              widget.document.expiryDate != null
-          ? '${daysUntil ?? 0} days • ${AppFormatters.shortDate(widget.document.expiryDate!)}'
-          : '${daysUntil ?? 0} days',
-    };
+    final label = _buildLabel();
 
     return AnimatedBuilder(
       animation: _controller,
       builder: (BuildContext context, Widget? child) {
-        final scale = widget.pulse &&
-                urgency == DocumentExpiryUrgency.critical
-            ? 1 + (_controller.value * 0.04)
-            : 1.0;
+        final scale = _shouldPulse ? 1 + (_controller.value * 0.05) : 1.0;
         return Transform.scale(scale: scale, child: child);
       },
       child: Container(
@@ -152,5 +144,20 @@ class _ExpiryBadgeState extends State<ExpiryBadge>
         ),
       ),
     );
+  }
+
+  String _buildLabel() {
+    if (widget.urgency == ExpiryBadgeUrgency.expired) {
+      if (widget.size == ExpiryBadgeSize.large && widget.date != null) {
+        return 'Expired • ${AppFormatters.shortDate(widget.date!)}';
+      }
+      return 'Expired';
+    }
+    final daysText =
+        '${widget.daysUntil ?? 0} day${widget.daysUntil == 1 ? '' : 's'}';
+    if (widget.size == ExpiryBadgeSize.large && widget.date != null) {
+      return '$daysText • ${AppFormatters.shortDate(widget.date!)}';
+    }
+    return daysText;
   }
 }

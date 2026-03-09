@@ -10,6 +10,7 @@ import 'package:hearth/core/utils/formatters.dart';
 import 'package:hearth/core/widgets/animated/hearth_celebration.dart';
 import 'package:hearth/core/widgets/animated/hearth_list_item_entry.dart';
 import 'package:hearth/core/widgets/animated/hearth_swipe_to_action.dart';
+import 'package:hearth/core/widgets/expiry_badge.dart';
 import 'package:hearth/core/widgets/hearth_card.dart';
 import 'package:hearth/core/widgets/hearth_progress_bar.dart';
 import 'package:hearth/core/widgets/hearth_section_header.dart';
@@ -19,7 +20,7 @@ import 'package:hearth/features/documents/presentation/screens/expiry_timeline_s
 import 'package:hearth/features/documents/presentation/screens/folder_screen.dart';
 import 'package:hearth/features/documents/presentation/vault_lock_provider.dart';
 import 'package:hearth/features/documents/presentation/widgets/document_card.dart';
-import 'package:hearth/features/documents/presentation/widgets/expiry_badge.dart';
+import 'package:hearth/features/documents/presentation/widgets/document_expiry_badge_extensions.dart';
 import 'package:hearth/features/documents/presentation/widgets/folder_card.dart';
 import 'package:hearth/features/documents/presentation/widgets/vault_lock_overlay.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -30,7 +31,8 @@ class VaultDashboardScreen extends ConsumerStatefulWidget {
   static const String routePath = '/documents';
 
   @override
-  ConsumerState<VaultDashboardScreen> createState() => _VaultDashboardScreenState();
+  ConsumerState<VaultDashboardScreen> createState() =>
+      _VaultDashboardScreenState();
 }
 
 class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
@@ -50,9 +52,9 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
           return;
         }
         if (next.message != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(next.message!)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(next.message!)));
           ref.read(documentNotifierProvider.notifier).clearMessage();
         }
         if (next.lastSavedDocumentId != null) {
@@ -103,7 +105,8 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
     final expiringAsync = ref.watch(expiringDocumentsProvider);
     final householdId = ref.watch(documentHouseholdIdProvider);
     final searchResultsAsync = ref.watch(documentSearchProvider);
-    final showSearchResults = _searchOpen && _searchController.text.trim().isNotEmpty;
+    final showSearchResults =
+        _searchOpen && _searchController.text.trim().isNotEmpty;
 
     return Scaffold(
       appBar: AppBar(
@@ -139,10 +142,9 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
                           if (householdId == null) {
                             return;
                           }
-                          ref.read(documentSearchProvider.notifier).search(
-                                householdId: householdId,
-                                query: value,
-                              );
+                          ref
+                              .read(documentSearchProvider.notifier)
+                              .search(householdId: householdId, query: value);
                           setState(() {});
                         },
                       ),
@@ -225,8 +227,9 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
                                 title: 'Expiring Soon',
                                 subtitle: 'Documents within the next 60 days.',
                                 actionLabel: 'See All',
-                                onActionPressed: () =>
-                                    context.push(ExpiryTimelineScreen.routePath),
+                                onActionPressed: () => context.push(
+                                  ExpiryTimelineScreen.routePath,
+                                ),
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               SizedBox(
@@ -251,10 +254,17 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
                                                 CrossAxisAlignment.start,
                                             children: <Widget>[
                                               ExpiryBadge(
-                                                document: document,
+                                                urgency: document
+                                                    .expiryUrgency
+                                                    .badgeUrgency,
+                                                daysUntil:
+                                                    document.daysUntilExpiry,
+                                                date: document.expiryDate,
                                                 size: ExpiryBadgeSize.large,
                                               ),
-                                              const SizedBox(width: AppSpacing.md),
+                                              const SizedBox(
+                                                width: AppSpacing.md,
+                                              ),
                                               Expanded(
                                                 child: Column(
                                                   crossAxisAlignment:
@@ -263,29 +273,30 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
                                                     Text(
                                                       document.title,
                                                       maxLines: 2,
-                                                      overflow: TextOverflow
-                                                          .ellipsis,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: AppTextStyles
                                                           .titleMedium
                                                           .copyWith(
-                                                        color:
-                                                            AppColors.textPrimaryFor(
-                                                          brightness,
-                                                        ),
-                                                      ),
+                                                            color:
+                                                                AppColors.textPrimaryFor(
+                                                                  brightness,
+                                                                ),
+                                                          ),
                                                     ),
                                                     const SizedBox(
                                                       height: AppSpacing.xs,
                                                     ),
                                                     Text(
                                                       document.docType.label,
-                                                      style: AppTextStyles.bodySmall
+                                                      style: AppTextStyles
+                                                          .bodySmall
                                                           .copyWith(
-                                                        color:
-                                                            AppColors.textSecondaryFor(
-                                                          brightness,
-                                                        ),
-                                                      ),
+                                                            color:
+                                                                AppColors.textSecondaryFor(
+                                                                  brightness,
+                                                                ),
+                                                          ),
                                                     ),
                                                   ],
                                                 ),
@@ -330,11 +341,11 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
                             itemCount: folders.length,
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: AppSpacing.md,
-                              mainAxisSpacing: AppSpacing.md,
-                              childAspectRatio: 1.18,
-                            ),
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: AppSpacing.md,
+                                  mainAxisSpacing: AppSpacing.md,
+                                  childAspectRatio: 1.18,
+                                ),
                             itemBuilder: (BuildContext context, int index) {
                               final folder = folders[index];
                               return HearthListItemEntry(
@@ -363,19 +374,23 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
                             context.push(FolderScreen.routeForPath('root')),
                       ),
                       const SizedBox(height: AppSpacing.sm),
-                      ...List<Widget>.generate(recentDocuments.length, (int index) {
+                      ...List<Widget>.generate(recentDocuments.length, (
+                        int index,
+                      ) {
                         final document = recentDocuments[index];
                         return HearthListItemEntry(
                           index: index,
                           child: Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: AppSpacing.md),
+                            padding: const EdgeInsets.only(
+                              bottom: AppSpacing.md,
+                            ),
                             child: HearthSwipeToAction(
                               trailingAction: HearthSwipeAction(
                                 icon: HugeIcons.strokeRoundedDelete02,
                                 label: 'Delete',
                                 color: AppColors.errorFor(brightness),
-                                onTriggered: () => _confirmDeleteDocument(document),
+                                onTriggered: () =>
+                                    _confirmDeleteDocument(document),
                               ),
                               child: DocumentCard(
                                 document: document,
@@ -429,7 +444,8 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+              onPressed: () =>
+                  Navigator.of(context).pop(controller.text.trim()),
               child: const Text('Create'),
             ),
           ],
@@ -499,7 +515,9 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
       if (updatedName == null || updatedName.isEmpty) {
         return;
       }
-      await ref.read(documentNotifierProvider.notifier).renameFolder(
+      await ref
+          .read(documentNotifierProvider.notifier)
+          .renameFolder(
             folderId: folder.id,
             householdId: folder.householdId,
             name: updatedName,
@@ -537,7 +555,9 @@ class _VaultDashboardScreenState extends ConsumerState<VaultDashboardScreen> {
       return;
     }
     try {
-      await ref.read(documentNotifierProvider.notifier).deleteDocument(document);
+      await ref
+          .read(documentNotifierProvider.notifier)
+          .deleteDocument(document);
     } on StateError {
       return;
     }
