@@ -2,6 +2,14 @@
 
 Hearth is a Flutter mobile app for shared household coordination. Phase 1 delivers the foundation: the design system, local authentication, household creation and invites, the authenticated shell, and light/dark theme support.
 
+## Try the app (instant preview)
+
+You can test the Android app instantly in your browser (no install required):
+
+👉 https://appetize.io/app/b_fvatkjlj5dscu33gqyxgjsbljq
+
+> Note: This is a live emulator preview and may take a few seconds to load.
+
 ## Setup
 
 1. `flutter pub get`
