@@ -4,6 +4,7 @@
 *.pyc
 *.swp
 .DS_Store
+Thumbs.db
 .atom/
 .build/
 .buildlog/
@@ -18,20 +19,28 @@ migrate_working_dir/
 *.iws
 .idea/
 
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
+# VS Code
+.vscode/
+.vscode/settings.json
 
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
 /build/
 /coverage/
+.coverage
+
+# Flutter/Dart generated JS
+*.dart.js
+*.info.json
+*.js
+*.js.deps
+*.js.map
 
 # Symbolication related
 app.*.symbols
@@ -39,37 +48,71 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
+# Android Studio build artifacts
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/.gradle/
+/android/local.properties
 
 # Generated code
 *.g.dart
 *.freezed.dart
+*.drift.dart
 
-.vscode/
-
-
-# Flutter/Dart
-*.dart.js
-*.info.json
-*.js
-*.js.deps
-*.js.map
-.flutter-plugins
-
+# ============================================
 # Environment & Secrets
+# ============================================
 .env
 .env.*
-*.env.local
+!.env.example
+!.env.*.example
+*.local
 secrets.json
 key.json
 
-# Drift generated files
-*.drift.dart
+# ============================================
+# Mobile Signing
+# ============================================
+*.jks
+*.keystore
+key.properties
+*.p12
+*.mobileprovision
+*.cer
+*.certSigningRequest
 
+# ============================================
+# Firebase / Google Services
+# ============================================
+google-services.json
+GoogleService-Info.plist
+
+# ============================================
+# Private Keys and Certificates
+# ============================================
+*.pem
+*.key
+*.crt
+id_rsa
+id_ed25519
+*.ppk
+
+# ============================================
+# Cloud Provider Credentials
+# ============================================
+.aws/
+credentials
+terraform.tfvars
+*.tfvars
+!*.tfvars.example
+service-account*.json
+*-service-account.json
+credentials.json
+
+# ============================================
 # Temporary files
+# ============================================
 *.tmp
 *.temp
 *.cache
