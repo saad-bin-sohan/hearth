@@ -16,7 +16,7 @@
 
 | Phase | Tasks | Not Started | In Progress | Done (pending) | Verified | Blocked |
 |---|---|---|---|---|---|---|
-| 0 — Environment & Foundation | 6 | 4 | 0 | 2 | 0 | 0 |
+| 0 — Environment & Foundation | 6 | 3 | 0 | 3 | 0 | 0 |
 | 1 — Firestore Schema & Rules | 4 | 4 | 0 | 0 | 0 | 0 |
 | 2 — Authentication | 7 | 7 | 0 | 0 | 0 | 0 |
 | 3 — Household | 3 | 3 | 0 | 0 | 0 | 0 |
@@ -29,9 +29,9 @@
 | 10 — Calendar | 3 | 3 | 0 | 0 | 0 | 0 |
 | 11 — Cross-Cutting Cleanup | 6 | 6 | 0 | 0 | 0 | 0 |
 | 12 — Distribution Readiness | 4 | 4 | 0 | 0 | 0 | 0 |
-| **Total** | **58** | **56** | **0** | **2** | **0** | **0** |
+| **Total** | **58** | **55** | **0** | **3** | **0** | **0** |
 
-**The planning documents (task 0.6) and the Android build-breaking fix (task 0.1) are the only tasks touched so far.** Everything else in the project is genuinely not started yet — that's expected and correct at this stage.
+**The planning documents (task 0.6), the Android build-breaking fix (task 0.1), and the iOS deployment target bump (task 0.2) are the only tasks touched so far.** Everything else in the project is genuinely not started yet — that's expected and correct at this stage.
 
 ---
 
@@ -40,7 +40,7 @@
 | ID | Task | Label | Status | Date | Notes |
 |---|---|---|---|---|---|
 | 0.1 | Fix Android build-breaking `key.properties` bug | 🤖 | Done — verification pending | 2026-09-25 | Fixed in `android/app/build.gradle.kts`: loading `key.properties` and creating the "release" signing config are now conditional on the file existing; `buildTypes.release` falls back to stock debug signing (matching a fresh `flutter create`) when it's absent, per Section 5.6. Also switched the four property reads from `keystoreProperties["key"] as String` to `keystoreProperties.getProperty("key")`, matching Flutter's current official docs — a minor implementation choice beyond what plan.md literally specifies, noted here for transparency, not a functional deviation. Verify with no `android/key.properties` present: `flutter clean && flutter pub get && flutter build apk --debug` should now succeed instead of failing with a file-not-found error; `flutter build apk --release` should also succeed, debug-signed (proves the fallback branch specifically). |
-| 0.2 | Bump iOS deployment target to 15.0 | 🤖 | Not Started | | |
+| 0.2 | Bump iOS deployment target to 15.0 | 🤖 | Done — verification pending | 2026-09-25 | Bumped `IPHONEOS_DEPLOYMENT_TARGET` from 13.0 → 15.0 in all three project-level build configurations (Debug/Release/Profile) in `ios/Runner.xcodeproj/project.pbxproj` — verified by direct search these are the only 3 occurrences in the file; the Runner-target and RunnerTests-target configuration lists have no override of their own and correctly inherit from these three, so no other pbxproj edits were needed or made. Also bumped the version number inside `ios/Podfile`'s `# platform :ios, 'X.X'` line from 13.0 to 15.0, deliberately leaving the line commented — this mirrors Flutter's own upstream convention of bumping only the number and keeping the line commented whenever the tooling's own default target changes (cross-checked against Flutter's actual historical template-bump commits), rather than forcing it live; nothing else in this project currently needs a stricter floor than Flutter's own new default, so forcing it live would only add a second source of truth to keep in sync for no present benefit — a minor implementation choice beyond what plan.md literally specifies, noted here for transparency, not a functional deviation. `ios/Podfile.lock`'s `PODFILE CHECKSUM` line will self-refresh the next time `pod install` runs (triggered automatically by `flutter build ios` / `flutter run`, or manually) — intentionally not hand-edited, since it's a generated file. Verify with `flutter clean && flutter pub get && (cd ios && pod install)`; `flutter build ios --simulator` should then succeed (no Apple Developer signing needed for a simulator build). Also confirm visually: open `ios/Runner.xcworkspace` in Xcode (not the .xcodeproj) → Runner target → General tab → "Minimum Deployments" should read iOS 15.0. |
 | 0.3 | Create the Firebase project | 🧑 | Not Started | | Do **not** enable Cloud Storage or Blaze. |
 | 0.4 | Install FlutterFire CLI, run `flutterfire configure` | 🧑 | Not Started | | Depends on 0.3. |
 | 0.5 | Set up `fake_cloud_firestore` + Firebase Local Emulator Suite | 🤖 | Not Started | | |
