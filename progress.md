@@ -16,7 +16,7 @@
 
 | Phase | Tasks | Not Started | In Progress | Done (pending) | Verified | Blocked |
 |---|---|---|---|---|---|---|
-| 0 — Environment & Foundation | 6 | 5 | 0 | 1 | 0 | 0 |
+| 0 — Environment & Foundation | 6 | 4 | 0 | 2 | 0 | 0 |
 | 1 — Firestore Schema & Rules | 4 | 4 | 0 | 0 | 0 | 0 |
 | 2 — Authentication | 7 | 7 | 0 | 0 | 0 | 0 |
 | 3 — Household | 3 | 3 | 0 | 0 | 0 | 0 |
@@ -29,9 +29,9 @@
 | 10 — Calendar | 3 | 3 | 0 | 0 | 0 | 0 |
 | 11 — Cross-Cutting Cleanup | 6 | 6 | 0 | 0 | 0 | 0 |
 | 12 — Distribution Readiness | 4 | 4 | 0 | 0 | 0 | 0 |
-| **Total** | **58** | **57** | **0** | **1** | **0** | **0** |
+| **Total** | **58** | **56** | **0** | **2** | **0** | **0** |
 
-**Only the planning documents themselves exist so far** (task 0.6, this delivery). Everything else in the project is genuinely not started yet — that's expected and correct at this stage.
+**The planning documents (task 0.6) and the Android build-breaking fix (task 0.1) are the only tasks touched so far.** Everything else in the project is genuinely not started yet — that's expected and correct at this stage.
 
 ---
 
@@ -39,7 +39,7 @@
 
 | ID | Task | Label | Status | Date | Notes |
 |---|---|---|---|---|---|
-| 0.1 | Fix Android build-breaking `key.properties` bug | 🤖 | Not Started | | Blocks all Android builds until done — do this first. |
+| 0.1 | Fix Android build-breaking `key.properties` bug | 🤖 | Done — verification pending | 2026-09-25 | Fixed in `android/app/build.gradle.kts`: loading `key.properties` and creating the "release" signing config are now conditional on the file existing; `buildTypes.release` falls back to stock debug signing (matching a fresh `flutter create`) when it's absent, per Section 5.6. Also switched the four property reads from `keystoreProperties["key"] as String` to `keystoreProperties.getProperty("key")`, matching Flutter's current official docs — a minor implementation choice beyond what plan.md literally specifies, noted here for transparency, not a functional deviation. Verify with no `android/key.properties` present: `flutter clean && flutter pub get && flutter build apk --debug` should now succeed instead of failing with a file-not-found error; `flutter build apk --release` should also succeed, debug-signed (proves the fallback branch specifically). |
 | 0.2 | Bump iOS deployment target to 15.0 | 🤖 | Not Started | | |
 | 0.3 | Create the Firebase project | 🧑 | Not Started | | Do **not** enable Cloud Storage or Blaze. |
 | 0.4 | Install FlutterFire CLI, run `flutterfire configure` | 🧑 | Not Started | | Depends on 0.3. |
